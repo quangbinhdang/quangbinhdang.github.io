@@ -25,22 +25,22 @@
    <thead>
      <tr>
        <th id="Name" onclick="sortTable(0)">Name</th>
-       <th id="Age" onclick="sortTable(1)">Age</th>
-       <!-- <th id="SaddleNumber">Saddle Number</th> -->
-       <th id="Barrier" onclick="sortTable(2)">Barrier</th>
-       <th id="PrizeMoneyWon" onclick="sortTable(3)">Prize money</th>
-       <th onclick="sortTable(4)">Speed</th>
-       <th id="Weight" onclick="sortTable(5)">Weight</th>
-       <th onclick="sortTable(6)">Jockey</th>
-       <th onclick="sortTable(7)">Track win percentage</th>
-       <th onclick="sortTable(8)">Track place percentage</th>
-       <th onclick="sortTable(9)">T/D win percentage</th>
-       <th onclick="sortTable(10)">T/D place percentage</th>
-       <th onclick="sortTable(11)">Win percentage</th>
-       <th onclick="sortTable(12)">Place percentage</th>
-       <th onclick="sortTable(13)">Average prize</th>
-       <th onclick="sortTable(14)">Form</th>
-       <th onclick="sortTable(15)">Steve&Co points</th>
+       <th id="SaddleNumber" onclick="sortTable(1)">Number</th>
+       <th id="Age" onclick="sortTable(2)">Age</th>
+       <th id="Barrier" onclick="sortTable(3)">Barrier</th>
+       <th id="PrizeMoneyWon" onclick="sortTable(4)">Prize money</th>
+       <th onclick="sortTable(5)">Speed</th>
+       <th id="Weight" onclick="sortTable(6)">Weight</th>
+       <th onclick="sortTable(7)">Jockey</th>
+       <th onclick="sortTable(8)">Track win percentage</th>
+       <th onclick="sortTable(9)">Track place percentage</th>
+       <th onclick="sortTable(10)">T/D win percentage</th>
+       <th onclick="sortTable(11)">T/D place percentage</th>
+       <th onclick="sortTable(12)">Win percentage</th>
+       <th onclick="sortTable(13)">Place percentage</th>
+       <th onclick="sortTable(14)">Average prize</th>
+       <th onclick="sortTable(15)">Form</th>
+       <th onclick="sortTable(16)">Steve&Co points</th>
      </tr>
    </thead>
    <tbody id="horses_table_body">
@@ -67,9 +67,9 @@
     }
     
     function process_race(info, sortBy = null){
-  	var race = info.props.pageProps.initialReduxState.race;
-  	var raceDistance = race.Distance;
-  	var raceCondition = race.Meeting.TrackCondition;
+    var race = info.props.pageProps.initialReduxState.race;
+    var raceDistance = race.Distance;
+    var raceCondition = race.Meeting.TrackCondition;
     var state = race.Meeting.State;
     var horses = race.Runners;
 
@@ -84,91 +84,91 @@
        var status = horse.Status;
        if(status != "Scratched"){
         availableHorses.push(horse);
-				// Create an empty <tr> element and add it to the 1st position of the table:
-				var row = table.insertRow();
-				// Insert new cells (<td> elements) at the 1st and 2nd position of the "new" <tr> element:
-				var nameCell = row.insertCell();
-				var ageCell = row.insertCell();
-				// var saddleNumberCell = row.insertCell();
-				var barrierCell = row.insertCell();
-				var prizeMoneyCell = row.insertCell();
-				var speedCell = row.insertCell();
-				var weightCell = row.insertCell();
-				var jockeyCell = row.insertCell();
+        // Create an empty <tr> element and add it to the 1st position of the table:
+        var row = table.insertRow();
+        // Insert new cells (<td> elements) at the 1st and 2nd position of the "new" <tr> element:
+        var nameCell = row.insertCell();
+        var saddleNumberCell = row.insertCell();
+        var ageCell = row.insertCell();
+        var barrierCell = row.insertCell();
+        var prizeMoneyCell = row.insertCell();
+        var speedCell = row.insertCell();
+        var weightCell = row.insertCell();
+        var jockeyCell = row.insertCell();
 
-				var trackWinPercentCell = row.insertCell();
-				var trackPlacePercentCell = row.insertCell();
+        var trackWinPercentCell = row.insertCell();
+        var trackPlacePercentCell = row.insertCell();
 
-				var trackDistanceWinPercentCell = row.insertCell();
-				var trackDistancePlacePercentCell = row.insertCell();
+        var trackDistanceWinPercentCell = row.insertCell();
+        var trackDistancePlacePercentCell = row.insertCell();
 
-				var winPercentCell = row.insertCell();
-				var placePercentCell = row.insertCell();
-				var averagePrizeMoneyCell = row.insertCell();
-				var formCell = row.insertCell();
+        var winPercentCell = row.insertCell();
+        var placePercentCell = row.insertCell();
+        var averagePrizeMoneyCell = row.insertCell();
+        var formCell = row.insertCell();
 
-				var steveCoPointsCell = row.insertCell();
+        var steveCoPointsCell = row.insertCell();
         pointsCellArray.push(steveCoPointsCell);
 
-				// horse info 
-				var name = horse.Name;
-				var age = horse.Age;
-				var sex = horse.Sex;
-				var barrier = horse.Barrier;
-				var prizeMoney = horse.PrizeMoneyWon;
-				var speed = horse.SpeedMap.Speed;
-				var weight = horse.totalWeight;
-				var jockey = horse.Jockey.Name;
-				// var saddleNumber = horse.SaddleNumber;
+        // horse info 
+        var name = horse.Name;
+        var age = horse.Age;
+        var sex = horse.Sex;
+        var barrier = horse.Barrier;
+        var prizeMoney = horse.PrizeMoneyWon;
+        var speed = horse.SpeedMap.Speed;
+        var weight = horse.totalWeight;
+        var jockey = horse.Jockey.Name;
+        var saddleNumber = horse.SaddleNumber;
 
-				var trackPerformanceWinPercentage = Math.round((horse.stats.trackPerformance.wins/horse.stats.trackPerformance.starts)*100);
-				var trackPerformancePlacePercentage = Math.round(((horse.stats.trackPerformance.wins + horse.stats.trackPerformance.seconds)/horse.stats.trackPerformance.starts) * 100);
+        var trackPerformanceWinPercentage = Math.round((horse.stats.trackPerformance.wins/horse.stats.trackPerformance.starts)*100);
+        var trackPerformancePlacePercentage = Math.round(((horse.stats.trackPerformance.wins + horse.stats.trackPerformance.seconds)/horse.stats.trackPerformance.starts) * 100);
 
         var distancePerformanceWinPercentage = Math.round((horse.stats.distancePerformance.wins/horse.stats.distancePerformance.starts)*100);
         var distancePerformancePlacePercentage = Math.round(((horse.stats.distancePerformance.wins + horse.stats.distancePerformance.seconds)/horse.stats.distancePerformance.starts) * 100);
 
-				var trackDistanceWinPercentage = Math.round((horse.stats.trackAndDistancePerformance.wins/horse.stats.trackAndDistancePerformance.starts) * 100);
-				var trackDistancePlacePercentage = Math.round(((horse.stats.trackAndDistancePerformance.wins+horse.stats.trackAndDistancePerformance.seconds)/horse.stats.trackAndDistancePerformance.starts)  * 100);
+        var trackDistanceWinPercentage = Math.round((horse.stats.trackAndDistancePerformance.wins/horse.stats.trackAndDistancePerformance.starts) * 100);
+        var trackDistancePlacePercentage = Math.round(((horse.stats.trackAndDistancePerformance.wins+horse.stats.trackAndDistancePerformance.seconds)/horse.stats.trackAndDistancePerformance.starts)  * 100);
 
-				var winPercentage = horse.stats.winPercent;
-				var placePercentage = horse.stats.placePercent;
+        var winPercentage = horse.stats.winPercent;
+        var placePercentage = horse.stats.placePercent;
 
-				nameCell.innerHTML = name;
-				ageCell.innerHTML = age;
-				// saddleNumberCell.innerHTML = saddleNumber;
-				barrierCell.innerHTML = barrier;
-				prizeMoneyCell.innerHTML = Math.round(prizeMoney * 100);
-				speedCell.innerHTML = speed;
-				weightCell.innerHTML = weight;
-				jockeyCell.innerHTML = jockey;
+        nameCell.innerHTML = name;
+        ageCell.innerHTML = age;
+        saddleNumberCell.innerHTML = saddleNumber;
+        barrierCell.innerHTML = barrier;
+        prizeMoneyCell.innerHTML = Math.round(prizeMoney * 100);
+        speedCell.innerHTML = speed;
+        weightCell.innerHTML = weight;
+        jockeyCell.innerHTML = jockey;
 
-				trackWinPercentCell.innerHTML = trackPerformanceWinPercentage;
-				trackPlacePercentCell.innerHTML = trackPerformancePlacePercentage;
+        trackWinPercentCell.innerHTML = trackPerformanceWinPercentage;
+        trackPlacePercentCell.innerHTML = trackPerformancePlacePercentage;
 
-				trackDistanceWinPercentCell.innerHTML = trackDistanceWinPercentage;
-				trackDistancePlacePercentCell.innerHTML = trackDistancePlacePercentage;
+        trackDistanceWinPercentCell.innerHTML = trackDistanceWinPercentage;
+        trackDistancePlacePercentCell.innerHTML = trackDistancePlacePercentage;
 
-				winPercentCell.innerHTML = winPercentage;
-				placePercentCell.innerHTML = placePercentage;
+        winPercentCell.innerHTML = winPercentage;
+        placePercentCell.innerHTML = placePercentage;
 
-				var averagePrizeMoney = Math.round(prizeMoney/horse.stats.allPerformance.starts);
-				averagePrizeArray.push(averagePrizeMoney);
-				
-				averagePrizeMoneyCell.innerHTML = Math.round(averagePrizeMoney * 100);
+        var averagePrizeMoney = Math.round(prizeMoney/horse.stats.allPerformance.starts);
+        averagePrizeArray.push(averagePrizeMoney);
+        
+        averagePrizeMoneyCell.innerHTML = Math.round(averagePrizeMoney * 100);
         var formBonus = 0;
-				var previousForms = horse.PreviousForm;
-				previousForms.forEach(form => {
-					var timeArray = [];
-					var finishedArray = [];
-					var marginArray = [];
-					var formDistance = form.Distance;
-					if(formDistance == raceDistance && form.TimeRan != "N/A" && form.Finish <= 3){
-						timeArray.push(form.TimeRan);
-						finishedArray.push(form.Finish);
-						marginArray.push(form.Margin);
-						var formInfo = "Finish: " + form.Finish + "/" + form.NumberOfRunners + "<br/>Time: " + form.TimeRan + "<br/>Margin: " + form.Margin + "<br/>----------------<br/>";
-						formCell.innerHTML += formInfo;
-					}
+        var previousForms = horse.PreviousForm;
+        previousForms.forEach(form => {
+          var timeArray = [];
+          var finishedArray = [];
+          var marginArray = [];
+          var formDistance = form.Distance;
+          if(formDistance == raceDistance && form.TimeRan != "N/A" && form.Finish <= 3){
+            timeArray.push(form.TimeRan);
+            finishedArray.push(form.Finish);
+            marginArray.push(form.Margin);
+            var formInfo = "Finish: " + form.Finish + "/" + form.NumberOfRunners + "<br/>Time: " + form.TimeRan + "<br/>Margin: " + form.Margin + "<br/>----------------<br/>";
+            formCell.innerHTML += formInfo;
+          }
           if(form.Finish <= 3){
               if(jockey.toLowerCase() == form.Jockey){
                 formBonus += 5;
@@ -226,11 +226,11 @@
           } else if (form.Finish > (form.NumberOfRunners/3)){
             formBonus -= 1;
           }
-				});
+        });
 
-				// MARK: Logic
-				// Bonus on jockeys
-				var jockeyBonus = getJockeyPoints(jockey, state);
+        // MARK: Logic
+        // Bonus on jockeys
+        var jockeyBonus = getJockeyPoints(jockey, state);
         var speedBarrierBonus = 0;
         var speedDistanceBonus = 0;
         var trackBonus = 0;
@@ -271,8 +271,8 @@
         }
         console.log("jockeyBonus: " + jockeyBonus + " || speedBarrierBonus: " + speedBarrierBonus + " || speedDistanceBonus: " + speedDistanceBonus + " || distanceBonus: " + distanceBonus + " || trackDistanceBonus: " + trackDistanceBonus + " || formBonus: " + formBonus);
         var bonus = jockeyBonus + speedBarrierBonus + speedDistanceBonus + distanceBonus + trackDistanceBonus + formBonus + ageBonus;
-				// var totalPoints = bonus + penalty;
-				steveCoPointsCell.innerHTML = bonus; 
+        // var totalPoints = bonus + penalty;
+        steveCoPointsCell.innerHTML = bonus; 
       }
     });
     averagePrizeArray.sort((a, b) => a - b);
@@ -299,107 +299,107 @@
      console.log("Jock = " + jockey + " | State = " + state)
      switch(state.toLowerCase()) {
        case "Nsw".toLowerCase():
-				// code block
-				switch(jockey){
-          case "James McDonald".toLowerCase(): 		return 20;
-          case "William Pike".toLowerCase(): 		return 20;
-          case "Ashley Morgan".toLowerCase(): 		return 19;
-          case "Hugh Bowman".toLowerCase(): 			return 18;
-          case "James McDonald".toLowerCase(): 		return 17;
-          case "Jason Collett".toLowerCase(): 		return 16;
-          case "Tommy Berry".toLowerCase(): 			return 15;
-          case "Dylan Gibbons".toLowerCase(): 		return 14;
-          case "Mathew Cahill".toLowerCase(): 		return 13;
-          case "Reece Jones".toLowerCase(): 			return 12;
-          case "Grant Buckley".toLowerCase(): 		return 11;
-          case "Tim Clark".toLowerCase(): 				return 10;
-          case "Winona Costin".toLowerCase(): 		return 9;
-          case "Brodie Loy".toLowerCase(): 				return 8;
-          case "Ben Looker".toLowerCase(): 				return 7;
-          case "Jackson Searle".toLowerCase(): 		return 6;
-          case "Jeff Penza".toLowerCase(): 				return 5;
-          case "Brooke Stower".toLowerCase(): 		return 4;
-          case "Aaron Bullock".toLowerCase(): 		return 3;
-          case "Christian Reith".toLowerCase(): 	return 2;
-          case "Mikayla Weir".toLowerCase(): 			return 1;
+        // code block
+        switch(jockey){
+          case "James McDonald".toLowerCase():    return 20;
+          case "William Pike".toLowerCase():    return 20;
+          case "Ashley Morgan".toLowerCase():     return 19;
+          case "Hugh Bowman".toLowerCase():       return 18;
+          case "James McDonald".toLowerCase():    return 17;
+          case "Jason Collett".toLowerCase():     return 16;
+          case "Tommy Berry".toLowerCase():       return 15;
+          case "Dylan Gibbons".toLowerCase():     return 14;
+          case "Mathew Cahill".toLowerCase():     return 13;
+          case "Reece Jones".toLowerCase():       return 12;
+          case "Grant Buckley".toLowerCase():     return 11;
+          case "Tim Clark".toLowerCase():         return 10;
+          case "Winona Costin".toLowerCase():     return 9;
+          case "Brodie Loy".toLowerCase():        return 8;
+          case "Ben Looker".toLowerCase():        return 7;
+          case "Jackson Searle".toLowerCase():    return 6;
+          case "Jeff Penza".toLowerCase():        return 5;
+          case "Brooke Stower".toLowerCase():     return 4;
+          case "Aaron Bullock".toLowerCase():     return 3;
+          case "Christian Reith".toLowerCase():   return 2;
+          case "Mikayla Weir".toLowerCase():      return 1;
           default: return 0;
         }
         break;
         case "Vic".toLowerCase():
         switch(jockey.toLowerCase()){
-         case "Damian Lane".toLowerCase(): 		return 20;
-         case "J Allen".toLowerCase(): 		return 19;
-         case "Jye McNeil".toLowerCase(): 			return 18;
+         case "Damian Lane".toLowerCase():    return 20;
+         case "J Allen".toLowerCase():    return 19;
+         case "Jye McNeil".toLowerCase():       return 18;
          case "Damien Thornton".toLowerCase(): return 17;
-         case "Jordan Childs".toLowerCase(): 		return 16;
-         case "Jason Collett".toLowerCase(): 		return 15;
-         case "Jarrod Fry".toLowerCase(): 			return 14;
-         case "Craig Newitt".toLowerCase(): 		return 13;
-         case "Patrick Moloney".toLowerCase(): 			return 12;
-         case "Will Gordon".toLowerCase(): 		return 11;
-         case "Zac Spain".toLowerCase(): 				return 10;
-         case "Jamie Kah".toLowerCase(): 		return 9;
-         case "Damien Oliver".toLowerCase(): 				return 8;
-         case "Michael Dee".toLowerCase(): 				return 7;
-         case "Beau Mertens".toLowerCase(): 		return 6;
-         case "Blaike McDougall".toLowerCase(): 		return 6;
-         case "Brett Prebble".toLowerCase(): 		return 5;
-         case "Declan Bates".toLowerCase(): 				return 5;
-         case "Josh Richards".toLowerCase(): 		return 4;
-         case "Jack Hill".toLowerCase(): 		return 3;
-         case "Craig Williams".toLowerCase(): 	return 2;
-         case "Dean Holland".toLowerCase(): 			return 1;
+         case "Jordan Childs".toLowerCase():    return 16;
+         case "Jason Collett".toLowerCase():    return 15;
+         case "Jarrod Fry".toLowerCase():       return 14;
+         case "Craig Newitt".toLowerCase():     return 13;
+         case "Patrick Moloney".toLowerCase():      return 12;
+         case "Will Gordon".toLowerCase():    return 11;
+         case "Zac Spain".toLowerCase():        return 10;
+         case "Jamie Kah".toLowerCase():    return 9;
+         case "Damien Oliver".toLowerCase():        return 8;
+         case "Michael Dee".toLowerCase():        return 7;
+         case "Beau Mertens".toLowerCase():     return 6;
+         case "Blaike McDougall".toLowerCase():     return 6;
+         case "Brett Prebble".toLowerCase():    return 5;
+         case "Declan Bates".toLowerCase():         return 5;
+         case "Josh Richards".toLowerCase():    return 4;
+         case "Jack Hill".toLowerCase():    return 3;
+         case "Craig Williams".toLowerCase():   return 2;
+         case "Dean Holland".toLowerCase():       return 1;
          default: return 0;
        }
-				// code block
-				break;
+        // code block
+        break;
        case "WA".toLowerCase():
        switch(jockey.toLowerCase()){
-        case "Clint Johnston-Porter".toLowerCase(): 		return 20;
-        case "Chris Parnham".toLowerCase(): 		return 19;
-        case "Natasha Faithfull".toLowerCase(): 		return 18;
-        case "Holly Watson".toLowerCase(): 			return 17;
-        case "Brad Rawiller".toLowerCase(): 		return 16;
-        case "Shaun O'Donnell".toLowerCase(): 		return 15;
-        case "Troy Turner".toLowerCase(): 			return 14;
-        case "Joseph Azzopardi".toLowerCase(): 		return 13;
-        case "Jason Whiting".toLowerCase(): 		return 12;
-        case "Shaun McGruddy".toLowerCase(): 			return 11;
-        case "Lucy Warwick".toLowerCase(): 		return 10;
-        case "Laqdar Ramoly".toLowerCase(): 		return 9;
-        case "Patrick Carbery".toLowerCase(): 				return 8;
-        case "Keshaw Dhurun".toLowerCase(): 		return 7;
-        case "Brad Parnham".toLowerCase(): 				return 6;
-        case "Kyra Yuill".toLowerCase(): 				return 5;
-        case "Lisa Staples".toLowerCase(): 		return 4;
-        case "Andrew Castle".toLowerCase(): 				return 3;
-        case "Jade McNaught".toLowerCase(): 		return 2;
-        case "Jordan Turner".toLowerCase(): 		return 1;
+        case "Clint Johnston-Porter".toLowerCase():     return 20;
+        case "Chris Parnham".toLowerCase():     return 19;
+        case "Natasha Faithfull".toLowerCase():     return 18;
+        case "Holly Watson".toLowerCase():      return 17;
+        case "Brad Rawiller".toLowerCase():     return 16;
+        case "Shaun O'Donnell".toLowerCase():     return 15;
+        case "Troy Turner".toLowerCase():       return 14;
+        case "Joseph Azzopardi".toLowerCase():    return 13;
+        case "Jason Whiting".toLowerCase():     return 12;
+        case "Shaun McGruddy".toLowerCase():      return 11;
+        case "Lucy Warwick".toLowerCase():    return 10;
+        case "Laqdar Ramoly".toLowerCase():     return 9;
+        case "Patrick Carbery".toLowerCase():         return 8;
+        case "Keshaw Dhurun".toLowerCase():     return 7;
+        case "Brad Parnham".toLowerCase():        return 6;
+        case "Kyra Yuill".toLowerCase():        return 5;
+        case "Lisa Staples".toLowerCase():    return 4;
+        case "Andrew Castle".toLowerCase():         return 3;
+        case "Jade McNaught".toLowerCase():     return 2;
+        case "Jordan Turner".toLowerCase():     return 1;
         default: return 0;
       }
       break;
       case "SA".toLowerCase():
       switch(jockey.toLowerCase()){
-       case "Kayla Crowther".toLowerCase(): 		return 20;
-       case "Barend Vorster".toLowerCase(): 		return 19;
-       case "Ben Price".toLowerCase(): 		return 18;
-       case "Jake Toeroek".toLowerCase(): 			return 17;
-       case "Jason Holder".toLowerCase(): 		return 16;
-       case "Angus Chung".toLowerCase(): 		return 15;
-       case "Ryan Hurdle".toLowerCase(): 			return 14;
-       case "Todd Pannell".toLowerCase(): 		return 13;
-       case "Paul Gatt".toLowerCase(): 		return 12;
-       case "Dom Tourneur".toLowerCase(): 			return 11;
-       case "Justin Potter".toLowerCase(): 		return 10;
-       case "Jacob Opperman".toLowerCase(): 		return 9;
-       case "Ellis Wong".toLowerCase(): 				return 8;
-       case "Karl Zechner".toLowerCase(): 		return 7;
-       case "Teagan Voorham".toLowerCase(): 				return 6;
-       case "Jessica Eaton".toLowerCase(): 				return 5;
-       case "Anna Jordsjo".toLowerCase(): 		return 4;
-       case "Sophie Logan".toLowerCase(): 				return 3;
-       case "Jeffrey Maund".toLowerCase(): 		return 2;
-       case "Stacey Callow".toLowerCase(): 		return 1;
+       case "Kayla Crowther".toLowerCase():     return 20;
+       case "Barend Vorster".toLowerCase():     return 19;
+       case "Ben Price".toLowerCase():    return 18;
+       case "Jake Toeroek".toLowerCase():       return 17;
+       case "Jason Holder".toLowerCase():     return 16;
+       case "Angus Chung".toLowerCase():    return 15;
+       case "Ryan Hurdle".toLowerCase():      return 14;
+       case "Todd Pannell".toLowerCase():     return 13;
+       case "Paul Gatt".toLowerCase():    return 12;
+       case "Dom Tourneur".toLowerCase():       return 11;
+       case "Justin Potter".toLowerCase():    return 10;
+       case "Jacob Opperman".toLowerCase():     return 9;
+       case "Ellis Wong".toLowerCase():         return 8;
+       case "Karl Zechner".toLowerCase():     return 7;
+       case "Teagan Voorham".toLowerCase():         return 6;
+       case "Jessica Eaton".toLowerCase():        return 5;
+       case "Anna Jordsjo".toLowerCase():     return 4;
+       case "Sophie Logan".toLowerCase():         return 3;
+       case "Jeffrey Maund".toLowerCase():    return 2;
+       case "Stacey Callow".toLowerCase():    return 1;
        default: return 0;
      }
      default:
@@ -409,12 +409,12 @@
 
  function displayHorses(horses) {
    document.getElementById('track_condition').innerHTML = "Track condition: " + horses;
-    	// var string = JSON.stringify(horses)
-    	// var array = JSON.parse(horses);
-    	// var horse = horses[0].Name;
-    	console.log(horses);
-    	// alert(horses);
-    	// for(var i in array){
+      // var string = JSON.stringify(horses)
+      // var array = JSON.parse(horses);
+      // var horse = horses[0].Name;
+      console.log(horses);
+      // alert(horses);
+      // for(var i in array){
      //        console.log(i);
      //    }
 
@@ -422,17 +422,17 @@
       console.log("Horse = " + horse);
     });
 
-  //   	// Find a <table> element with id="myTable":		var table = document.getElementById("horses_table");
-		// for(var horse in horses) {
-		// 	console.log("horse")
-		//    // Create an empty <tr> element and add it to the 1st position of the table:
-  //   		var row = table.insertRow(0);
-  //   		// Insert new cells (<td> elements) at the 1st and 2nd position of the "new" <tr> element:
-  //   		var nameCell = row.insertCell(0);
-  //   		var winPercentCell = row.insertCell(1);
-  //   		var placePercentCell = row.insertCell(2);
-  //   		cell1.innerHTML = horse.Name;
-		// }
+  //    // Find a <table> element with id="myTable":    var table = document.getElementById("horses_table");
+    // for(var horse in horses) {
+    //  console.log("horse")
+    //    // Create an empty <tr> element and add it to the 1st position of the table:
+  //      var row = table.insertRow(0);
+  //      // Insert new cells (<td> elements) at the 1st and 2nd position of the "new" <tr> element:
+  //      var nameCell = row.insertCell(0);
+  //      var winPercentCell = row.insertCell(1);
+  //      var placePercentCell = row.insertCell(2);
+  //      cell1.innerHTML = horse.Name;
+    // }
   }
 
   document.getElementById('file').addEventListener('change', onChange);
@@ -493,35 +493,35 @@
     console.log("GO HERER!!!!!");
     if (dir == "asc") {
       if (x.innerHTML.toLowerCase() > y.innerHTML.toLowerCase()) {
-		          // If so, mark as a switch and break the loop:
-		          shouldSwitch = true;
-		          break;
-		        }
+              // If so, mark as a switch and break the loop:
+              shouldSwitch = true;
+              break;
+            }
          } else if (dir == "desc") {
           if (x.innerHTML.toLowerCase() < y.innerHTML.toLowerCase()) {
-			      // If so, mark as a switch and break the loop:
-			      shouldSwitch = true;
-			      break;
-			    }
-			  }
+            // If so, mark as a switch and break the loop:
+            shouldSwitch = true;
+            break;
+          }
+        }
       }
 
 
     //   if (dir == "asc") {
-			 //  if (Number(x.innerHTML) > Number(y.innerHTML)) {
-				// 	shouldSwitch = true;
-				// 	break;
-				// }
+       //  if (Number(x.innerHTML) > Number(y.innerHTML)) {
+        //  shouldSwitch = true;
+        //  break;
+        // }
     //     // if (x.innerHTML.toLowerCase() > y.innerHTML.toLowerCase()) {
     //     //   // If so, mark as a switch and break the loop:
     //     //   shouldSwitch = true;
     //     //   break;
     //     // }
     //   } else if (dir == "desc") {
-		  //   if (Number(x.innerHTML) < Number(y.innerHTML)) {
-				// 	shouldSwitch = true;
-				// 	break;
-				// }
+      //   if (Number(x.innerHTML) < Number(y.innerHTML)) {
+        //  shouldSwitch = true;
+        //  break;
+        // }
     //     // if (x.innerHTML.toLowerCase() < y.innerHTML.toLowerCase()) {
     //     //   // If so, mark as a switch and break the loop:
     //     //   shouldSwitch = true;
