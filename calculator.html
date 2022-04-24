@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Page Title</title>
+<style>
+table, th, td {
+	border: 1px solid;
+	border-collapse: collapse;
+}
+
+</style>
+
+</head>
+<body>
+
+<h1>Welcome to magic calculator</h1>
+<p id="demo">Upload your race source</p>
+
+<form enctype="multipart/form-data">
+<input id="file" type=file   accept=".txt" name="files[]" size=30>
+</form>
+<p id="track_distance"></p>
+<p id="track_condition"></p>
+<table id="horses_table" class="sortable">
+	<thead>
+	  <tr>
+
+	    <th id="Name" onclick="sortTable(0)">Name</th>
+	    <th id="Age" onclick="sortTable(1)">Age</th>
+	    <!-- <th id="SaddleNumber">Saddle Number</th> -->
+	    <th id="Barrier" onclick="sortTable(2)">Barrier</th>
+	    <th id="PrizeMoneyWon" onclick="sortTable(3)">Prize money</th>
+	    <th onclick="sortTable(4)">Speed</th>
+	    <th id="Weight" onclick="sortTable(5)">Weight</th>
+	    <th onclick="sortTable(6)">Jockey</th>
+	    <th onclick="sortTable(7)">Track win percentage</th>
+	    <th onclick="sortTable(8)">Track place percentage</th>
+	    <th onclick="sortTable(9)">T/D win percentage</th>
+	    <th onclick="sortTable(10)">T/D place percentage</th>
+	    <th onclick="sortTable(11)">Win percentage</th>
+	    <th onclick="sortTable(12)">Place percentage</th>
+	    <th onclick="sortTable(13)">Average prize</th>
+	    <th onclick="sortTable(14)">Form</th>
+	  </tr>
+	</thead>
+	<tbody id="horses_table_body">
+	</tbody>
+</table>
+</body>
+</html>
+
+<!-- <script src="https://www.kryogenix.org/code/browser/sorttable/sorttable.js"></script> -->
+
+<script type="text/javascript">
+
+(function(){
+
+    function onChange(event) {
+        var reader = new FileReader();
+        reader.onload = onReaderLoad;
+        reader.readAsText(event.target.files[0]);
+    }
+
+    function onReaderLoad(event){
+        var obj = JSON.parse(event.target.result);
+        process_race(obj, 'Name');
+    }
+    
+    function process_race(info, sortBy = null){
+    	var race = info.props.pageProps.initialReduxState.race;
+    	var raceDistance = race.Distance;
+    	var raceCondition = race.Meeting.TrackCondition
+    	var horses = race.Runners;
+
+        document.getElementById('track_distance').innerHTML = "Track distance: " + raceDistance;
+        document.getElementById('track_condition').innerHTML = "Track condition: " + raceCondition;
+		var table = document.getElementById("horses_table_body");
+		horses.sort(function (a, b) {
+			if (a[sortBy] > b[sortBy]) 
+				return 1
+			if (a[sortBy] < b[sortBy]) 
+				return -1
+			return 0
+		})
+
+        horses.forEach((horse) => {
+			var status = horse.Status;
+        	if(status != "Scratched"){
+				// Create an empty <tr> element and add it to the 1st position of the table:
+				var row = table.insertRow();
+				// Insert new cells (<td> elements) at the 1st and 2nd position of the "new" <tr> element:
+				var nameCell = row.insertCell();
+				var ageCell = row.insertCell();
+				// var saddleNumberCell = row.insertCell();
+				var barrierCell = row.insertCell();
+				var prizeMoneyCell = row.insertCell();
+				var speedCell = row.insertCell();
+				var weightCell = row.insertCell();
+				var jockeyCell = row.insertCell();
+
+				var trackWinPercentCell = row.insertCell();
+				var trackPlacePercentCell = row.insertCell();
+
+				var trackDistanceWinPercentCell = row.insertCell();
+				var trackDistancePlacePercentCell = row.insertCell();
+
+				var winPercentCell = row.insertCell();
+				var placePercentCell = row.insertCell();
+
+				// horse info 
+				var name = horse.Name;
+				var age = horse.Age;
+				var sex = horse.Sex;
+				var barrier = horse.Barrier;
+				var prizeMoney = horse.PrizeMoneyWon;
+				var speed = horse.SpeedMap.Speed;
+				var weight = horse.totalWeight;
+				var jockey = horse.Jockey.Name;
+				// var saddleNumber = horse.SaddleNumber;
+
+				var trackPerformanceWinPercentage = Math.round((horse.stats.trackPerformance.wins/horse.stats.trackPerformance.starts)*100);
+				var trackPerformancePlacePercentage = Math.round(((horse.stats.trackPerformance.wins + horse.stats.trackPerformance.seconds)/horse.stats.trackPerformance.starts) * 100);
+				var trackDistanceWinPercentage = Math.round((horse.stats.trackAndDistancePerformance.wins/horse.stats.trackAndDistancePerformance.starts) * 100);
+				var trackDistancePlacePercentage = Math.round(((horse.stats.trackAndDistancePerformance.wins+horse.stats.trackAndDistancePerformance.seconds)/horse.stats.trackAndDistancePerformance.starts)  * 100);
+
+				var winPercentage = horse.stats.winPercent;
+				var placePercentage = horse.stats.placePercent;
+
+				nameCell.innerHTML = name;
+				ageCell.innerHTML = age;
+				// saddleNumberCell.innerHTML = saddleNumber;
+				barrierCell.innerHTML = barrier;
+				prizeMoneyCell.innerHTML = Math.round(prizeMoney * 100);
+				speedCell.innerHTML = speed;
+				weightCell.innerHTML = weight;
+				jockeyCell.innerHTML = jockey;
+
+				trackWinPercentCell.innerHTML = trackPerformanceWinPercentage;
+				trackPlacePercentCell.innerHTML = trackPerformancePlacePercentage;
+
+				trackDistanceWinPercentCell.innerHTML = trackDistanceWinPercentage;
+				trackDistancePlacePercentCell.innerHTML = trackDistancePlacePercentage;
+
+				winPercentCell.innerHTML = winPercentage;
+				placePercentCell.innerHTML = placePercentage;
+
+				var averagePrizeMoney = Math.round(prizeMoney/horse.stats.turfPerformance.starts);
+				var averagePrizeMoneyCell = row.insertCell();
+				
+				averagePrizeMoneyCell.innerHTML = Math.round(averagePrizeMoney * 100);
+
+				var formCell = row.insertCell();
+				// Logic
+				var previousForms = horse.PreviousForm;
+				previousForms.forEach(form => {
+					var timeArray = [];
+					var finishedArray = [];
+					var marginArray = [];
+					var formDistance = form.Distance;
+					if(formDistance == raceDistance && form.TimeRan != "N/A" && form.Finish <= 3){
+						timeArray.push(form.TimeRan);
+						finishedArray.push(form.Finish);
+						marginArray.push(form.Margin);
+						var formInfo = "Finish: " + form.Finish + "/" + form.NumberOfRunners + "<br/>Time: " + form.TimeRan + "<br/>Margin: " + form.Margin + "<br/>----------------<br/>";
+						formCell.innerHTML += formInfo;
+					}
+				});
+      }	
+		});
+    }
+
+
+    function displayHorses(horses) {
+    	document.getElementById('track_condition').innerHTML = "Track condition: " + horses;
+    	// var string = JSON.stringify(horses)
+    	// var array = JSON.parse(horses);
+    	// var horse = horses[0].Name;
+    	console.log(horses);
+    	// alert(horses);
+    	// for(var i in array){
+     //        console.log(i);
+     //    }
+
+    	horses.forEach((horse) => {
+		  console.log("Horse = " + horse);
+		});
+
+  //   	// Find a <table> element with id="myTable":		var table = document.getElementById("horses_table");
+		// for(var horse in horses) {
+		// 	console.log("horse")
+		//    // Create an empty <tr> element and add it to the 1st position of the table:
+  //   		var row = table.insertRow(0);
+  //   		// Insert new cells (<td> elements) at the 1st and 2nd position of the "new" <tr> element:
+  //   		var nameCell = row.insertCell(0);
+  //   		var winPercentCell = row.insertCell(1);
+  //   		var placePercentCell = row.insertCell(2);
+  //   		cell1.innerHTML = horse.Name;
+		// }
+    }
+ 
+    document.getElementById('file').addEventListener('change', onChange);
+
+    const th = document.getElementsByTagName('th')
+    for (var i = 0; i < th.lenth; i++) {
+    	console.log(th[i])
+    	th[i].addEventListener('click', function (event) {
+    		let element = event.target || event.srcElement
+	    	console.log(element.id)
+	    })
+    }
+}());
+
+</script>
+
+<script>
+function sortTable(n) {
+  var table, rows, switching, i, x, y, shouldSwitch, dir, switchcount = 0;
+  table = document.getElementById("horses_table");
+  switching = true;
+  // Set the sorting direction to ascending:
+  dir = "asc";
+  /* Make a loop that will continue until
+  no switching has been done: */
+  while (switching) {
+    // Start by saying: no switching is done:
+    switching = false;
+    rows = table.rows;
+    /* Loop through all table rows (except the
+    first, which contains table headers): */
+    for (i = 1; i < (rows.length - 1); i++) {
+      // Start by saying there should be no switching:
+      shouldSwitch = false;
+      /* Get the two elements you want to compare,
+      one from current row and one from the next: */
+      x = rows[i].getElementsByTagName("TD")[n];
+      y = rows[i + 1].getElementsByTagName("TD")[n];
+      /* Check if the two rows should switch place,
+      based on the direction, asc or desc: */
+      console.log("MYTEST = " + isNaN(x.innerHTML) + " || " + isNaN(y.innerHTML));
+      if(!isNaN(x.innerHTML) && !isNaN(y.innerHTML)){
+			  if (dir == "asc") {
+					  if (Number(x.innerHTML) > Number(y.innerHTML)) {
+							shouldSwitch = true;
+							break;
+						}
+			    
+			  } else if (dir == "desc") {
+				    if (Number(x.innerHTML) < Number(y.innerHTML)) {
+							shouldSwitch = true;
+							break;
+						}
+			    
+			  }
+
+			} else {
+				console.log("GO HERER!!!!!");
+		  	if (dir == "asc") {
+		  		if (x.innerHTML.toLowerCase() > y.innerHTML.toLowerCase()) {
+		          // If so, mark as a switch and break the loop:
+		          shouldSwitch = true;
+		          break;
+		        }
+			  } else if (dir == "desc") {
+						if (x.innerHTML.toLowerCase() < y.innerHTML.toLowerCase()) {
+			      // If so, mark as a switch and break the loop:
+			      shouldSwitch = true;
+			      break;
+			    }
+			  }
+		}
+
+
+    //   if (dir == "asc") {
+			 //  if (Number(x.innerHTML) > Number(y.innerHTML)) {
+				// 	shouldSwitch = true;
+				// 	break;
+				// }
+    //     // if (x.innerHTML.toLowerCase() > y.innerHTML.toLowerCase()) {
+    //     //   // If so, mark as a switch and break the loop:
+    //     //   shouldSwitch = true;
+    //     //   break;
+    //     // }
+    //   } else if (dir == "desc") {
+		  //   if (Number(x.innerHTML) < Number(y.innerHTML)) {
+				// 	shouldSwitch = true;
+				// 	break;
+				// }
+    //     // if (x.innerHTML.toLowerCase() < y.innerHTML.toLowerCase()) {
+    //     //   // If so, mark as a switch and break the loop:
+    //     //   shouldSwitch = true;
+    //     //   break;
+    //     // }
+    //   }
+    }
+    if (shouldSwitch) {
+      /* If a switch has been marked, make the switch
+      and mark that a switch has been done: */
+      rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+      switching = true;
+      // Each time a switch is done, increase this count by 1:
+      switchcount ++;
+    } else {
+      /* If no switching has been done AND the direction is "asc",
+      set the direction to "desc" and run the while loop again. */
+      if (switchcount == 0 && dir == "asc") {
+        dir = "desc";
+        switching = true;
+      }
+    }
+  }
+}
+</script>
+
