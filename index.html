@@ -75,6 +75,7 @@
 
     var pointsCellArray = [];
     var averagePrizeArray = [];
+    var availableHorses = [];
 
      document.getElementById('track_distance').innerHTML = "Track distance: " + raceDistance;
      document.getElementById('track_condition').innerHTML = "Track condition: " + raceCondition;
@@ -82,6 +83,7 @@
      horses.forEach((horse) => {
        var status = horse.Status;
        if(status != "Scratched"){
+        availableHorses.push(horse);
 				// Create an empty <tr> element and add it to the 1st position of the table:
 				var row = table.insertRow();
 				// Insert new cells (<td> elements) at the 1st and 2nd position of the "new" <tr> element:
@@ -275,11 +277,14 @@
     });
     averagePrizeArray.sort((a, b) => a - b);
     console.log("AVERAGE PRIZE = " + averagePrizeArray);
-    averagePrizeArray.forEach((prize, prizeIndex) => {
-      horses.forEach((horse, horseIndex) => {
+    console.log("horses= " + horses.length);
+    averagePrizeArray.forEach(function(prize, prizeIndex){
+
+      availableHorses.forEach(function(horse, horseIndex){
         var prizeMoney = horse.PrizeMoneyWon;
         var averagePrizeMoney = Math.round(prizeMoney/horse.stats.allPerformance.starts);
         if(averagePrizeMoney == prize){
+          console.log("horseIndex: " + horseIndex);
             var points = Number(pointsCellArray[horseIndex].innerHTML);
             console.log("points: " + points + " || prize bonus: " + prizeIndex);
             console.log("total: " + Number(points + prizeIndex));
