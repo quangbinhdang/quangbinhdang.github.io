@@ -59,7 +59,6 @@
   function submitForm(){
         var bypassCORSURL = "https://corsproxy.giadang.com?url="
         var url = document.getElementById('url').value;
-        console.log("url " + url);
         $.ajax({
             url: bypassCORSURL + url,
             type: "GET",
@@ -68,7 +67,6 @@
             for (var i = 0; i < nodes.length; i++) {
               var node = $(nodes[i])
               if (node.is('script#__NEXT_DATA__')) {
-                console.log(node.text())
                 var obj = JSON.parse(node.text());
                 process_race(obj);
               }
@@ -80,12 +78,11 @@
       });
     }
 
-    function test(){
-        alert('Form has been submitted');
-        return false;
-      }
-
     function process_race(info){
+
+      var table = document.getElementById("horses_table_body");
+      table.innerHTML = '';
+
       var race = info.props.pageProps.initialReduxState.race;
       var raceName = race.trackName;
       var raceNumber = race.RaceNumber;
@@ -100,7 +97,6 @@
       document.getElementById('track_name').innerHTML = "Track name: " + raceName + " " + raceNumber;
       document.getElementById('track_distance').innerHTML = "Track distance: " + raceDistance;
       document.getElementById('track_condition').innerHTML = "Track condition: " + raceCondition;
-      var table = document.getElementById("horses_table_body");
       horses.forEach((horse) => {
        var status = horse.Status;
        if(status != "Scratched"){
