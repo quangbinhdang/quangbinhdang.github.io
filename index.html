@@ -14,11 +14,14 @@
 <body>
 
   <h1>Welcome to magic calculator</h1>
-  <p id="demo">Upload your race source</p>
 
-  <form enctype="multipart/form-data">
-    <input id="file" type=file   accept=".txt" name="files[]" size=30>
+  <form onsubmit="return false">
+  <label for="fname">Race Form URL:</label>
+  <input type="text" id="url"><br><br>
+  <input type="submit" value="Submit" onclick="submitForm();">
   </form>
+
+  <p id="track_name"></p>
   <p id="track_distance"></p>
   <p id="track_condition"></p>
   <table id="horses_table" class="sortable">
@@ -50,24 +53,42 @@
 </html>
 
 <!-- <script src="https://www.kryogenix.org/code/browser/sorttable/sorttable.js"></script> -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 
 <script type="text/javascript">
-
-  (function(){
-
-    function onChange(event) {
-      var reader = new FileReader();
-      reader.onload = onReaderLoad;
-      reader.readAsText(event.target.files[0]);
+  function submitForm(){
+        var bypassCORSURL = "https://corsproxy.giadang.com?url="
+        var url = document.getElementById('url').value;
+        console.log("url " + url);
+        $.ajax({
+            url: bypassCORSURL + url,
+            type: "GET",
+            success: function (response) {
+            var nodes = $.parseHTML(response)
+            for (var i = 0; i < nodes.length; i++) {
+              var node = $(nodes[i])
+              if (node.is('script#__NEXT_DATA__')) {
+                console.log(node.text())
+                var obj = JSON.parse(node.text());
+                process_race(obj);
+              }
+            }
+          },
+          error: function (xhr, status) {
+              console.log("error");
+          }
+      });
     }
 
-    function onReaderLoad(event){
-      var obj = JSON.parse(event.target.result);
-      process_race(obj, 'Name');
-    }
-    
-    function process_race(info, sortBy = null){
+    function test(){
+        alert('Form has been submitted');
+        return false;
+      }
+
+    function process_race(info){
       var race = info.props.pageProps.initialReduxState.race;
+      var raceName = race.trackName;
+      var raceNumber = race.RaceNumber;
       var raceDistance = race.Distance;
       var raceCondition = race.Meeting.TrackCondition;
       var state = race.Meeting.State;
@@ -76,7 +97,7 @@
       var pointsCellArray = [];
       var averagePrizeArray = [];
       var availableHorses = [];
-
+      document.getElementById('track_name').innerHTML = "Track name: " + raceName + " " + raceNumber;
       document.getElementById('track_distance').innerHTML = "Track distance: " + raceDistance;
       document.getElementById('track_condition').innerHTML = "Track condition: " + raceCondition;
       var table = document.getElementById("horses_table_body");
@@ -316,12 +337,12 @@
         steveCoPointsCell.innerHTML = bonus; 
       }
     });
-averagePrizeArray.sort((a, b) => a - b);
-console.log("AVERAGE PRIZE = " + averagePrizeArray);
-console.log("horses= " + horses.length);
-averagePrizeArray.forEach(function(prize, prizeIndex){
+    averagePrizeArray.sort((a, b) => a - b);
+    console.log("AVERAGE PRIZE = " + averagePrizeArray);
+    console.log("horses= " + horses.length);
+    averagePrizeArray.forEach(function(prize, prizeIndex){
 
-  availableHorses.forEach(function(horse, horseIndex){
+    availableHorses.forEach(function(horse, horseIndex){
     var prizeMoney = horse.PrizeMoneyWon;
     var averagePrizeMoney = Math.round(prizeMoney/horse.stats.allPerformance.starts);
     if(averagePrizeMoney == prize){
@@ -474,45 +495,10 @@ function getJockeyPoints(jockey, state) {
    }
  }
 
- function displayHorses(horses) {
-   document.getElementById('track_condition').innerHTML = "Track condition: " + horses;
-      // var string = JSON.stringify(horses)
-      // var array = JSON.parse(horses);
-      // var horse = horses[0].Name;
-      console.log(horses);
-      // alert(horses);
-      // for(var i in array){
-     //        console.log(i);
-     //    }
+  $(document).ready(function() {
+    
 
-     horses.forEach((horse) => {
-      console.log("Horse = " + horse);
-    });
-
-  //    // Find a <table> element with id="myTable":    var table = document.getElementById("horses_table");
-    // for(var horse in horses) {
-    //  console.log("horse")
-    //    // Create an empty <tr> element and add it to the 1st position of the table:
-  //      var row = table.insertRow(0);
-  //      // Insert new cells (<td> elements) at the 1st and 2nd position of the "new" <tr> element:
-  //      var nameCell = row.insertCell(0);
-  //      var winPercentCell = row.insertCell(1);
-  //      var placePercentCell = row.insertCell(2);
-  //      cell1.innerHTML = horse.Name;
-    // }
-  }
-
-  document.getElementById('file').addEventListener('change', onChange);
-
-  const th = document.getElementsByTagName('th')
-  for (var i = 0; i < th.lenth; i++) {
-   console.log(th[i])
-   th[i].addEventListener('click', function (event) {
-    let element = event.target || event.srcElement
-    console.log(element.id)
-  })
- }
-}());
+  });
 
 </script>
 
@@ -572,29 +558,6 @@ function getJockeyPoints(jockey, state) {
           }
         }
       }
-
-
-    //   if (dir == "asc") {
-       //  if (Number(x.innerHTML) > Number(y.innerHTML)) {
-        //  shouldSwitch = true;
-        //  break;
-        // }
-    //     // if (x.innerHTML.toLowerCase() > y.innerHTML.toLowerCase()) {
-    //     //   // If so, mark as a switch and break the loop:
-    //     //   shouldSwitch = true;
-    //     //   break;
-    //     // }
-    //   } else if (dir == "desc") {
-      //   if (Number(x.innerHTML) < Number(y.innerHTML)) {
-        //  shouldSwitch = true;
-        //  break;
-        // }
-    //     // if (x.innerHTML.toLowerCase() < y.innerHTML.toLowerCase()) {
-    //     //   // If so, mark as a switch and break the loop:
-    //     //   shouldSwitch = true;
-    //     //   break;
-    //     // }
-    //   }
   }
   if (shouldSwitch) {
       /* If a switch has been marked, make the switch
