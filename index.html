@@ -137,7 +137,7 @@
         ageCell.innerHTML = age;
         saddleNumberCell.innerHTML = saddleNumber;
         barrierCell.innerHTML = barrier;
-        prizeMoneyCell.innerHTML = Math.round(prizeMoney * 100);
+        prizeMoneyCell.innerHTML = Math.round(prizeMoney);
         speedCell.innerHTML = speed;
         weightCell.innerHTML = weight;
         jockeyCell.innerHTML = jockey;
@@ -231,7 +231,11 @@
 
             var miliToWin = Number(mili);
             // Margin Bonus to time, 0.1L = 5ms
-            miliToWin += Number(form.Margin) * 10 * 5;
+            if(finish == 1){
+              miliToWin -= Number(form.Margin) * 10 * 5;
+            } else {
+              miliToWin += Number(form.Margin) * 10 * 5;
+            }
             console.log("000 miliToWin == " + miliToWin);
             //Barrier Bonus to time, 1 Barrier = 33ms
             var barrierDiffirence = Number(barrier) - Number(form.Barrier);
