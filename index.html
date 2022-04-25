@@ -234,13 +234,13 @@
             miliToWin += Number(form.Margin) * 10 * 5;
             console.log("000 miliToWin == " + miliToWin);
             //Barrier Bonus to time, 1 Barrier = 33ms
-            var barrierDiffirence = Number(form.Barrier) - Number(barrier);
+            var barrierDiffirence = Number(barrier) - Number(form.Barrier);
             miliToWin += Number(barrierDiffirence * 33);
             console.log("1111 miliToWin == " + miliToWin);
             // Weight Bonus to time, 1kg = 50ms
             weight = weight.replace('kgs', '');
             console.log("2222 miliToWin == " + miliToWin);
-            var weightDifference = Number(form.BodyWeight) + Number(form.WeightCarried) - Number(weight);
+            var weightDifference = Number(weight) - (Number(form.BodyWeight) + Number(form.WeightCarried));
             console.log("form.BodyWeight = " + form.BodyWeight + "form.WeightCarried = " + form.WeightCarried + "| weight = " + weight + " | weightDifference = " + weightDifference + " | ADDED = " + Number(weightDifference * 50));
 
             miliToWin += Number(weightDifference * 50);
