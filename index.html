@@ -67,20 +67,20 @@
     }
     
     function process_race(info, sortBy = null){
-    var race = info.props.pageProps.initialReduxState.race;
-    var raceDistance = race.Distance;
-    var raceCondition = race.Meeting.TrackCondition;
-    var state = race.Meeting.State;
-    var horses = race.Runners;
+      var race = info.props.pageProps.initialReduxState.race;
+      var raceDistance = race.Distance;
+      var raceCondition = race.Meeting.TrackCondition;
+      var state = race.Meeting.State;
+      var horses = race.Runners;
 
-    var pointsCellArray = [];
-    var averagePrizeArray = [];
-    var availableHorses = [];
+      var pointsCellArray = [];
+      var averagePrizeArray = [];
+      var availableHorses = [];
 
-     document.getElementById('track_distance').innerHTML = "Track distance: " + raceDistance;
-     document.getElementById('track_condition').innerHTML = "Track condition: " + raceCondition;
-     var table = document.getElementById("horses_table_body");
-     horses.forEach((horse) => {
+      document.getElementById('track_distance').innerHTML = "Track distance: " + raceDistance;
+      document.getElementById('track_condition').innerHTML = "Track condition: " + raceCondition;
+      var table = document.getElementById("horses_table_body");
+      horses.forEach((horse) => {
        var status = horse.Status;
        if(status != "Scratched"){
         availableHorses.push(horse);
@@ -160,48 +160,48 @@
         previousForms.forEach(form => {
 
           if(form.Finish <= 3){
-              if(jockey.toLowerCase() == form.Jockey){
-                formBonus += 5;
-              }
-              if(barrier == form.Barrier){
-                formBonus += 3;
-              } else if(barrier == (form.Barrier + 1) || barrier == (form.Barrier - 1)) {
-                formBonus += 2;
-              } else if (barrier == (form.Barrier + 2) || barrier == (form.Barrier - 2)){
-                formBonus += 1;
-              } else {
-                formBonus -= 3;
-              }
+            if(jockey.toLowerCase() == form.Jockey){
+              formBonus += 5;
+            }
+            if(barrier == form.Barrier){
+              formBonus += 3;
+            } else if(barrier == (form.Barrier + 1) || barrier == (form.Barrier - 1)) {
+              formBonus += 2;
+            } else if (barrier == (form.Barrier + 2) || barrier == (form.Barrier - 2)){
+              formBonus += 1;
+            } else {
+              formBonus -= 3;
+            }
 
-              if(raceDistance == form.Distance){
-                  formBonus += 5;
-              }
+            if(raceDistance == form.Distance){
+              formBonus += 5;
+            }
 
-              if(Number(form.StartingPrice) > 30 && Number(form.Margin) < 0.5){
-                  formBonus += 5;
-              }
+            if(Number(form.StartingPrice) > 30 && Number(form.Margin) < 0.5){
+              formBonus += 5;
+            }
 
-              if(form.RacePrizeMoney > 5000000){
-                  formBonus += 15;
-              } else if(form.RacePrizeMoney > 3000000) {
-                  formBonus += 13;
-              } else if(form.RacePrizeMoney > 1000000) {
-                  formBonus += 10;
-              } else if(form.RacePrizeMoney > 800000) {
-                  formBonus += 9;
-              } else if(form.RacePrizeMoney > 500000) {
-                  formBonus += 7;
-              } else if(form.RacePrizeMoney > 200000) {
-                  formBonus += 5;
-              } else if(form.RacePrizeMoney > 100000) {
-                  formBonus += 4;
-              } else if(form.RacePrizeMoney > 70000) {
-                  formBonus += 3;
-              } else if(form.RacePrizeMoney > 50000) {
-                  formBonus += 2;
-              } else if(form.RacePrizeMoney > 20000) {
-                  formBonus += 1;
-              }
+            if(form.RacePrizeMoney > 5000000){
+              formBonus += 15;
+            } else if(form.RacePrizeMoney > 3000000) {
+              formBonus += 13;
+            } else if(form.RacePrizeMoney > 1000000) {
+              formBonus += 10;
+            } else if(form.RacePrizeMoney > 800000) {
+              formBonus += 9;
+            } else if(form.RacePrizeMoney > 500000) {
+              formBonus += 7;
+            } else if(form.RacePrizeMoney > 200000) {
+              formBonus += 5;
+            } else if(form.RacePrizeMoney > 100000) {
+              formBonus += 4;
+            } else if(form.RacePrizeMoney > 70000) {
+              formBonus += 3;
+            } else if(form.RacePrizeMoney > 50000) {
+              formBonus += 2;
+            } else if(form.RacePrizeMoney > 20000) {
+              formBonus += 1;
+            }
           }
           if(form.Finish == 1){
             formBonus += 5;
@@ -210,7 +210,7 @@
           } else if(form.Finish == 3){
             formBonus += 1;
           } else if(form.Finish == form.NumberOfRunners){
-              formBonus -= 5;
+            formBonus -= 5;
           } else if(form.Finish > (form.NumberOfRunners/2)){
             formBonus -= 3;
           } else if (form.Finish > (form.NumberOfRunners/3)){
@@ -266,6 +266,7 @@
         // MARK: Logic
         // Bonus on jockeys
         var jockeyBonus = getJockeyPoints(jockey, state);
+        console.log("jockeyBonus: " + jockeyBonus);
         var speedBarrierBonus = 0;
         var speedDistanceBonus = 0;
         var trackBonus = 0;
@@ -273,18 +274,18 @@
         var trackDistanceBonus = 0;
         var ageBonus = 0;
         if(isNaN(trackPerformanceWinPercentage) || trackPerformanceWinPercentage == 0 || trackPerformancePlacePercentage < 50){
-            trackBonus -= 10;
+          trackBonus -= 10;
         } else {
           trackBonus += Math.round(trackPerformanceWinPercentage/10);
         }
         if(isNaN(trackPerformancePlacePercentage) || trackPerformanceWinPercentage == 0 || trackPerformancePlacePercentage < 50){
-            distanceBonus = -10;
+          distanceBonus = -10;
         } else {
           distanceBonus += Math.round(trackPerformancePlacePercentage/10);
         }
 
         if(isNaN(trackDistancePlacePercentage)  || trackDistanceWinPercentage == 0|| trackDistancePlacePercentage < 50){
-            trackDistanceBonus = -10;
+          trackDistanceBonus = -10;
         } else {
           trackDistanceBonus += Math.round(trackDistancePlacePercentage/10);
         }
@@ -294,13 +295,13 @@
           speedBarrierBonus = speed - barrier;
         }
         if(raceDistance <= 1100){
-            speedDistanceBonus = speed;
+          speedDistanceBonus = speed;
         }
 
         if(age >= 4 < 7){
-            ageBonus += 3;
+          ageBonus += 3;
         } else if(age > 3 &&  age < 8) {
-            ageBonus += 1;
+          ageBonus += 1;
         } else {
           ageBonus -= 3;
         }
@@ -310,159 +311,161 @@
         steveCoPointsCell.innerHTML = bonus; 
       }
     });
-    averagePrizeArray.sort((a, b) => a - b);
-    console.log("AVERAGE PRIZE = " + averagePrizeArray);
-    console.log("horses= " + horses.length);
-    averagePrizeArray.forEach(function(prize, prizeIndex){
+averagePrizeArray.sort((a, b) => a - b);
+console.log("AVERAGE PRIZE = " + averagePrizeArray);
+console.log("horses= " + horses.length);
+averagePrizeArray.forEach(function(prize, prizeIndex){
 
-      availableHorses.forEach(function(horse, horseIndex){
-        var prizeMoney = horse.PrizeMoneyWon;
-        var averagePrizeMoney = Math.round(prizeMoney/horse.stats.allPerformance.starts);
-        if(averagePrizeMoney == prize){
-          console.log("horseIndex: " + horseIndex);
-            var points = Number(pointsCellArray[horseIndex].innerHTML);
-            console.log("points: " + points + " || prize bonus: " + prizeIndex);
-            console.log("total: " + Number(points + prizeIndex));
+  availableHorses.forEach(function(horse, horseIndex){
+    var prizeMoney = horse.PrizeMoneyWon;
+    var averagePrizeMoney = Math.round(prizeMoney/horse.stats.allPerformance.starts);
+    if(averagePrizeMoney == prize){
+      console.log("horseIndex: " + horseIndex);
+      var points = Number(pointsCellArray[horseIndex].innerHTML);
+      console.log("points: " + points + " || prize bonus: " + prizeIndex);
+      console.log("total: " + Number(points + prizeIndex));
 
-            pointsCellArray[horseIndex].innerHTML = Number(points + prizeIndex);
-        }
-      });
-    });
+      pointsCellArray[horseIndex].innerHTML = Number(points + prizeIndex);
+    }
+  });
+});
+}
+
+function getJockeyPoints(jockey, state) {
+ console.log("Jock = " + jockey.toLowerCase() + " | State = " + state.toLowerCase())
+ switch(state.toLowerCase()) {
+    case "nsw".toLowerCase():
+    switch(jockey.toLowerCase()){
+      case "James McDonald".toLowerCase():    return 20;
+      case "William Pike".toLowerCase():      return 20;
+      case "Ashley Morgan".toLowerCase():     return 19;
+      case "Hugh Bowman".toLowerCase():       return 18;
+      case "James McDonald".toLowerCase():    return 17;
+      case "Jason Collett".toLowerCase():     return 16;
+      case "Tommy Berry".toLowerCase():       return 15;
+      case "Dylan Gibbons".toLowerCase():     return 14;
+      case "Mathew Cahill".toLowerCase():     return 13;
+      case "Reece Jones".toLowerCase():       return 12;
+      case "Grant Buckley".toLowerCase():     return 11;
+      case "Tim Clark".toLowerCase():         return 10;
+      case "Winona Costin".toLowerCase():     return 9;
+      case "Brodie Loy".toLowerCase():        return 8;
+      case "Ben Looker".toLowerCase():        return 7;
+      case "Jackson Searle".toLowerCase():    return 6;
+      case "Jeff Penza".toLowerCase():        return 5;
+      case "Brooke Stower".toLowerCase():     return 4;
+      case "Aaron Bullock".toLowerCase():     return 3;
+      case "Christian Reith".toLowerCase():   return 2;
+      case "Mikayla Weir".toLowerCase():      return 1;
+      default: return 0;
+    }
+    break;
+
+    case "Vic".toLowerCase():
+    switch(jockey.toLowerCase()){
+     case "Damian Lane".toLowerCase():    return 20;
+     case "J Allen".toLowerCase():    return 19;
+     case "Jye McNeil".toLowerCase():       return 18;
+     case "Damien Thornton".toLowerCase(): return 17;
+     case "Jordan Childs".toLowerCase():    return 16;
+     case "Jason Collett".toLowerCase():    return 15;
+     case "Jarrod Fry".toLowerCase():       return 14;
+     case "Craig Newitt".toLowerCase():     return 13;
+     case "Patrick Moloney".toLowerCase():      return 12;
+     case "Will Gordon".toLowerCase():    return 11;
+     case "Zac Spain".toLowerCase():        return 10;
+     case "Jamie Kah".toLowerCase():    return 9;
+     case "Damien Oliver".toLowerCase():        return 8;
+     case "Michael Dee".toLowerCase():        return 7;
+     case "Beau Mertens".toLowerCase():     return 6;
+     case "Blaike McDougall".toLowerCase():     return 6;
+     case "Brett Prebble".toLowerCase():    return 5;
+     case "Declan Bates".toLowerCase():         return 5;
+     case "Josh Richards".toLowerCase():    return 4;
+     case "Jack Hill".toLowerCase():    return 3;
+     case "Craig Williams".toLowerCase():   return 2;
+     case "Dean Holland".toLowerCase():       return 1;
+     default: return 0;
+    }
+    break;
+
+    case "WA".toLowerCase():
+    switch(jockey.toLowerCase()){
+      case "Clint Johnston-Porter".toLowerCase():     return 20;
+      case "Chris Parnham".toLowerCase():     return 19;
+      case "Natasha Faithfull".toLowerCase():     return 18;
+      case "Holly Watson".toLowerCase():      return 17;
+      case "Brad Rawiller".toLowerCase():     return 16;
+      case "Shaun O'Donnell".toLowerCase():     return 15;
+      case "Troy Turner".toLowerCase():       return 14;
+      case "Joseph Azzopardi".toLowerCase():    return 13;
+      case "Jason Whiting".toLowerCase():     return 12;
+      case "Shaun McGruddy".toLowerCase():      return 11;
+      case "Lucy Warwick".toLowerCase():    return 10;
+      case "Laqdar Ramoly".toLowerCase():     return 9;
+      case "Patrick Carbery".toLowerCase():         return 8;
+      case "Keshaw Dhurun".toLowerCase():     return 7;
+      case "Brad Parnham".toLowerCase():        return 6;
+      case "Kyra Yuill".toLowerCase():        return 5;
+      case "Lisa Staples".toLowerCase():    return 4;
+      case "Andrew Castle".toLowerCase():         return 3;
+      case "Jade McNaught".toLowerCase():     return 2;
+      case "Jordan Turner".toLowerCase():     return 1;
+      default: return 0;
+    }
+    break;
+
+    case "SA".toLowerCase():
+    switch(jockey.toLowerCase()){
+     case "Kayla Crowther".toLowerCase():     return 20;
+     case "Barend Vorster".toLowerCase():     return 19;
+     case "Ben Price".toLowerCase():    return 18;
+     case "Jake Toeroek".toLowerCase():       return 17;
+     case "Jason Holder".toLowerCase():     return 16;
+     case "Angus Chung".toLowerCase():    return 15;
+     case "Ryan Hurdle".toLowerCase():      return 14;
+     case "Todd Pannell".toLowerCase():     return 13;
+     case "Paul Gatt".toLowerCase():    return 12;
+     case "Dom Tourneur".toLowerCase():       return 11;
+     case "Justin Potter".toLowerCase():    return 10;
+     case "Jacob Opperman".toLowerCase():     return 9;
+     case "Ellis Wong".toLowerCase():         return 8;
+     case "Karl Zechner".toLowerCase():     return 7;
+     case "Teagan Voorham".toLowerCase():         return 6;
+     case "Jessica Eaton".toLowerCase():        return 5;
+     case "Anna Jordsjo".toLowerCase():     return 4;
+     case "Sophie Logan".toLowerCase():         return 3;
+     case "Jeffrey Maund".toLowerCase():    return 2;
+     case "Stacey Callow".toLowerCase():    return 1;
+     default: return 0;
    }
-
-   function getJockeyPoints(jockey, state) {
-     console.log("Jock = " + jockey + " | State = " + state)
-     switch(state.toLowerCase()) {
-       case "Nsw".toLowerCase():
-        // code block
-        switch(jockey){
-          case "James McDonald".toLowerCase():    return 20;
-          case "William Pike".toLowerCase():    return 20;
-          case "Ashley Morgan".toLowerCase():     return 19;
-          case "Hugh Bowman".toLowerCase():       return 18;
-          case "James McDonald".toLowerCase():    return 17;
-          case "Jason Collett".toLowerCase():     return 16;
-          case "Tommy Berry".toLowerCase():       return 15;
-          case "Dylan Gibbons".toLowerCase():     return 14;
-          case "Mathew Cahill".toLowerCase():     return 13;
-          case "Reece Jones".toLowerCase():       return 12;
-          case "Grant Buckley".toLowerCase():     return 11;
-          case "Tim Clark".toLowerCase():         return 10;
-          case "Winona Costin".toLowerCase():     return 9;
-          case "Brodie Loy".toLowerCase():        return 8;
-          case "Ben Looker".toLowerCase():        return 7;
-          case "Jackson Searle".toLowerCase():    return 6;
-          case "Jeff Penza".toLowerCase():        return 5;
-          case "Brooke Stower".toLowerCase():     return 4;
-          case "Aaron Bullock".toLowerCase():     return 3;
-          case "Christian Reith".toLowerCase():   return 2;
-          case "Mikayla Weir".toLowerCase():      return 1;
-          default: return 0;
-        }
-        break;
-        case "Vic".toLowerCase():
-        switch(jockey.toLowerCase()){
-         case "Damian Lane".toLowerCase():    return 20;
-         case "J Allen".toLowerCase():    return 19;
-         case "Jye McNeil".toLowerCase():       return 18;
-         case "Damien Thornton".toLowerCase(): return 17;
-         case "Jordan Childs".toLowerCase():    return 16;
-         case "Jason Collett".toLowerCase():    return 15;
-         case "Jarrod Fry".toLowerCase():       return 14;
-         case "Craig Newitt".toLowerCase():     return 13;
-         case "Patrick Moloney".toLowerCase():      return 12;
-         case "Will Gordon".toLowerCase():    return 11;
-         case "Zac Spain".toLowerCase():        return 10;
-         case "Jamie Kah".toLowerCase():    return 9;
-         case "Damien Oliver".toLowerCase():        return 8;
-         case "Michael Dee".toLowerCase():        return 7;
-         case "Beau Mertens".toLowerCase():     return 6;
-         case "Blaike McDougall".toLowerCase():     return 6;
-         case "Brett Prebble".toLowerCase():    return 5;
-         case "Declan Bates".toLowerCase():         return 5;
-         case "Josh Richards".toLowerCase():    return 4;
-         case "Jack Hill".toLowerCase():    return 3;
-         case "Craig Williams".toLowerCase():   return 2;
-         case "Dean Holland".toLowerCase():       return 1;
-         default: return 0;
-       }
-       break;
-       case "WA".toLowerCase():
-       switch(jockey.toLowerCase()){
-        case "Clint Johnston-Porter".toLowerCase():     return 20;
-        case "Chris Parnham".toLowerCase():     return 19;
-        case "Natasha Faithfull".toLowerCase():     return 18;
-        case "Holly Watson".toLowerCase():      return 17;
-        case "Brad Rawiller".toLowerCase():     return 16;
-        case "Shaun O'Donnell".toLowerCase():     return 15;
-        case "Troy Turner".toLowerCase():       return 14;
-        case "Joseph Azzopardi".toLowerCase():    return 13;
-        case "Jason Whiting".toLowerCase():     return 12;
-        case "Shaun McGruddy".toLowerCase():      return 11;
-        case "Lucy Warwick".toLowerCase():    return 10;
-        case "Laqdar Ramoly".toLowerCase():     return 9;
-        case "Patrick Carbery".toLowerCase():         return 8;
-        case "Keshaw Dhurun".toLowerCase():     return 7;
-        case "Brad Parnham".toLowerCase():        return 6;
-        case "Kyra Yuill".toLowerCase():        return 5;
-        case "Lisa Staples".toLowerCase():    return 4;
-        case "Andrew Castle".toLowerCase():         return 3;
-        case "Jade McNaught".toLowerCase():     return 2;
-        case "Jordan Turner".toLowerCase():     return 1;
-        default: return 0;
-      }
-        break;
-      case "SA".toLowerCase():
-      switch(jockey.toLowerCase()){
-       case "Kayla Crowther".toLowerCase():     return 20;
-       case "Barend Vorster".toLowerCase():     return 19;
-       case "Ben Price".toLowerCase():    return 18;
-       case "Jake Toeroek".toLowerCase():       return 17;
-       case "Jason Holder".toLowerCase():     return 16;
-       case "Angus Chung".toLowerCase():    return 15;
-       case "Ryan Hurdle".toLowerCase():      return 14;
-       case "Todd Pannell".toLowerCase():     return 13;
-       case "Paul Gatt".toLowerCase():    return 12;
-       case "Dom Tourneur".toLowerCase():       return 11;
-       case "Justin Potter".toLowerCase():    return 10;
-       case "Jacob Opperman".toLowerCase():     return 9;
-       case "Ellis Wong".toLowerCase():         return 8;
-       case "Karl Zechner".toLowerCase():     return 7;
-       case "Teagan Voorham".toLowerCase():         return 6;
-       case "Jessica Eaton".toLowerCase():        return 5;
-       case "Anna Jordsjo".toLowerCase():     return 4;
-       case "Sophie Logan".toLowerCase():         return 3;
-       case "Jeffrey Maund".toLowerCase():    return 2;
-       case "Stacey Callow".toLowerCase():    return 1;
-       default: return 0;
-     }
-      break;
-     case "QLD".toLowerCase():
-      switch(jockey.toLowerCase()){
-       case "James Orman".toLowerCase():     return 20;
-       case "Ryan Maloney".toLowerCase():     return 19;
-       case "Jasmine Cornish".toLowerCase():    return 18;
-       case "Kyle Wilson-Taylor".toLowerCase():       return 17;
-       case "Ryan Wiggins".toLowerCase():     return 16;
-       case "Tahlia Fenlon".toLowerCase():    return 15;
-       case "Justin Stanley".toLowerCase():      return 14;
-       case "Lacey Morrison".toLowerCase():     return 13;
-       case "Angela Jones".toLowerCase():    return 12;
-       case "Noel Callow".toLowerCase():       return 11;
-       case "Jim Byrne".toLowerCase():    return 10;
-       case "Zac Lloyd".toLowerCase():     return 9;
-       case "Boris Thornton".toLowerCase():         return 8;
-       case "Jaden Lloyd".toLowerCase():     return 7;
-       case "Ben Thompson".toLowerCase():         return 6;
-       case "Tiffani Brooker".toLowerCase():        return 5;
-       case "Samantha Collett".toLowerCase():     return 4;
-       case "Nathan Day".toLowerCase():         return 3;
-       case "Marnu Potgieter".toLowerCase():    return 2;
-       case "Les Tilley".toLowerCase():    return 1;
-       default: return 0;
-     }
-     default:
-     return 0;
+   break;
+   case "QLD".toLowerCase():
+   switch(jockey.toLowerCase()){
+     case "James Orman".toLowerCase():     return 20;
+     case "Ryan Maloney".toLowerCase():     return 19;
+     case "Jasmine Cornish".toLowerCase():    return 18;
+     case "Kyle Wilson-Taylor".toLowerCase():       return 17;
+     case "Ryan Wiggins".toLowerCase():     return 16;
+     case "Tahlia Fenlon".toLowerCase():    return 15;
+     case "Justin Stanley".toLowerCase():      return 14;
+     case "Lacey Morrison".toLowerCase():     return 13;
+     case "Angela Jones".toLowerCase():    return 12;
+     case "Noel Callow".toLowerCase():       return 11;
+     case "Jim Byrne".toLowerCase():    return 10;
+     case "Zac Lloyd".toLowerCase():     return 9;
+     case "Boris Thornton".toLowerCase():         return 8;
+     case "Jaden Lloyd".toLowerCase():     return 7;
+     case "Ben Thompson".toLowerCase():         return 6;
+     case "Tiffani Brooker".toLowerCase():        return 5;
+     case "Samantha Collett".toLowerCase():     return 4;
+     case "Nathan Day".toLowerCase():         return 3;
+     case "Marnu Potgieter".toLowerCase():    return 2;
+     case "Les Tilley".toLowerCase():    return 1;
+     default: return 0;
+   }
+   break;
+   default: return 0;
    }
  }
 
@@ -556,8 +559,8 @@
               shouldSwitch = true;
               break;
             }
-         } else if (dir == "desc") {
-          if (x.innerHTML.toLowerCase() < y.innerHTML.toLowerCase()) {
+          } else if (dir == "desc") {
+            if (x.innerHTML.toLowerCase() < y.innerHTML.toLowerCase()) {
             // If so, mark as a switch and break the loop:
             shouldSwitch = true;
             break;
