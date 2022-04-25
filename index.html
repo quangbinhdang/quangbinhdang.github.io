@@ -17,7 +17,7 @@
 
   <form onsubmit="return false">
   <label for="fname">Race Form URL:</label>
-  <input type="text" id="url"><br><br>
+  <input type="text" id="url" size="100"><br><br>
   <input type="submit" value="Submit" onclick="submitForm();">
   </form>
 
@@ -539,7 +539,6 @@ function getJockeyPoints(jockey, state) {
      }
 
    } else {
-    console.log("GO HERER!!!!!");
     if (dir == "asc") {
       if (x.innerHTML.toLowerCase() > y.innerHTML.toLowerCase()) {
               // If so, mark as a switch and break the loop:
