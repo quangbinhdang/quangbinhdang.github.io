@@ -154,7 +154,7 @@
         var averagePrizeMoney = Math.round(prizeMoney/horse.stats.allPerformance.starts);
         averagePrizeArray.push(averagePrizeMoney);
         
-        averagePrizeMoneyCell.innerHTML = Math.round(averagePrizeMoney * 100);
+        averagePrizeMoneyCell.innerHTML = Math.round(averagePrizeMoney);
         var formBonus = 0;
         var previousForms = horse.PreviousForm;
         previousForms.forEach(form => {
