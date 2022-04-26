@@ -184,8 +184,8 @@
         var formBonus = 0;
         var previousForms = horse.PreviousForm;
         previousForms.forEach(form => {
-
           if(form.Finish <= 3){
+            
             if(jockey.toLowerCase() == form.Jockey){
               formBonus += 5;
               pointBreakdownComment += "-Same jock points +5<br/>"
@@ -268,53 +268,60 @@
           }
 
           var formDistance = form.Distance;
-          if(form.TimeRan != "N/A" && form.Finish <= 3){
-            var timeRan = form.TimeRan;
+          if(form.Finish <= 3){
             var finish = form.Finish;
             var margin = form.Margin;
-            var timeArray = timeRan.split(":");
-            var minute = timeArray[0]; 
-            var secondArray = timeArray[1].split(".");
+            var timeRan = 0;
+            var timeArray = [];
+            var expectedWinTime = "N/A";
+            if(form.TimeRan != "N/A"){
+              timeRan = form.TimeRan;
+              timeArray = timeRan.split(":");
+              var minute = timeArray[0]; 
+              var secondArray = timeArray[1].split(".");
+              var second = secondArray[0];
+              var mili = secondArray[1];
 
-            var second = secondArray[0];
-            var mili = secondArray[1];
+              var miliToWin = Number(mili);
+              // Margin Bonus to time, 0.1L = 3ms
+              if(finish == 1){
+                miliToWin -= Number(form.Margin) * 10 * 3;
+              } else {
+                miliToWin += Number(form.Margin) * 10 * 3;
+              }
 
-            var miliToWin = Number(mili);
-            // Margin Bonus to time, 0.1L = 3ms
-            if(finish == 1){
-              miliToWin -= Number(form.Margin) * 10 * 3;
-            } else {
-              miliToWin += Number(form.Margin) * 10 * 3;
+              console.log("000 miliToWin == " + miliToWin);
+              //Barrier Bonus to time, 1 Barrier = 33ms
+              var barrierDiffirence = Number(barrier) - Number(form.Barrier);
+              miliToWin += Number(barrierDiffirence * 33);
+              console.log("1111 miliToWin == " + miliToWin);
+              // Weight Bonus to time, 1kg = 50ms
+              weight = weight.replace('kgs', '');
+              console.log("2222 miliToWin == " + miliToWin);
+              var weightDifference = Number(weight) - (Number(form.BodyWeight) + Number(form.WeightCarried));
+              console.log("form.BodyWeight = " + form.BodyWeight + "form.WeightCarried = " + form.WeightCarried + "| weight = " + weight + " | weightDifference = " + weightDifference + " | ADDED = " + Number(weightDifference * 50));
+
+              miliToWin += Number(weightDifference * 50);
+              console.log("3333 miliToWin == " + miliToWin);
+              var secondToWin = Math.floor(miliToWin/100);
+
+              if(miliToWin < 0){
+                miliToWin = 100 + (miliToWin % 100);
+              }
+
+              
+              var remainingMiliToWin = miliToWin % 100;
+              second = Number(second) + Number(secondToWin);
+              mili = Number(remainingMiliToWin);
+              expectedWinTime = minute + ":" + second + "." + mili;
+              console.log("minute = " + timeArray[0] + " second = " + second + " mili = " + remainingMiliToWin);
             }
-            console.log("000 miliToWin == " + miliToWin);
-            //Barrier Bonus to time, 1 Barrier = 33ms
-            var barrierDiffirence = Number(barrier) - Number(form.Barrier);
-            miliToWin += Number(barrierDiffirence * 33);
-            console.log("1111 miliToWin == " + miliToWin);
-            // Weight Bonus to time, 1kg = 50ms
-            weight = weight.replace('kgs', '');
-            console.log("2222 miliToWin == " + miliToWin);
-            var weightDifference = Number(weight) - (Number(form.BodyWeight) + Number(form.WeightCarried));
-            console.log("form.BodyWeight = " + form.BodyWeight + "form.WeightCarried = " + form.WeightCarried + "| weight = " + weight + " | weightDifference = " + weightDifference + " | ADDED = " + Number(weightDifference * 50));
-
-            miliToWin += Number(weightDifference * 50);
-            console.log("3333 miliToWin == " + miliToWin);
-            var secondToWin = Math.floor(miliToWin/100);
-
-            if(miliToWin < 0){
-              miliToWin = 100 + (miliToWin % 100);
-            }
-
             
-            var remainingMiliToWin = miliToWin % 100;
-            second = Number(second) + Number(secondToWin);
-            mili = Number(remainingMiliToWin);
-            var expectedWinTime = minute + ":" + second + "." + mili;
-            console.log("minute = " + timeArray[0] + " second = " + second + " mili = " + remainingMiliToWin);
             var formInfo = "Distance: "+ form.Distance+"<br/>Finish: " + finish + "/" + form.NumberOfRunners + "<br/>Time: " + timeRan + "</br>In run: "+ form.InRun + "</br>Expected Time: "+ expectedWinTime + "<br/>Margin: " + margin + "<br/>----------------<br/>";
             formCell.innerHTML += formInfo;
           }
 
+          pointBreakdownComment += "------------------ <br/>";
         });
 
         // MARK: Logic
