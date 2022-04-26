@@ -320,16 +320,16 @@
             }
             var formInfo = "";
             if(form.Distance == raceDistance){
-              formInfo += "<b>Distance: "+ form.Distance +"</b>";
+              formInfo += "-<b>Distance: "+ form.Distance +"</b>";
             } else {
-              formInfo += "Distance: "+ form.Distance;
+              formInfo += "-Distance: "+ form.Distance;
             }
             if(trackCondition == raceCondition.charAt(0)){
-              formInfo += "<br/><b>Condition: "+ trackCondition +"</b>";
+              formInfo += "<br/>-<b>Condition: "+ trackCondition +"</b>";
             } else {
-              formInfo += "<br/>Condition: "+ trackCondition;
+              formInfo += "<br/>-Condition: "+ trackCondition;
             }
-            formInfo += "<br/>Finish: " + finish + "/" + form.NumberOfRunners + "<br/>Time: " + timeRan + "</br>In run: "+ form.InRun + "</br>Expected Time: "+ expectedWinTime + "<br/>Margin: " + margin + "<br/>----------------<br/>";
+            formInfo += "<br/>-Finish: " + finish + "/" + form.NumberOfRunners + "<br/>-Time: " + timeRan + "</br>-In run: "+ form.InRun + "</br>-Expected Time: "+ expectedWinTime + "<br/>-Margin: " + margin + "<br/>----------------<br/>";
             formCell.innerHTML += formInfo;
           }
 
