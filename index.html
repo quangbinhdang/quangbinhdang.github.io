@@ -27,23 +27,24 @@
   <table id="horses_table" class="sortable">
    <thead>
      <tr>
-       <th id="Name" onclick="sortTable(0)">Name</th>
-       <th id="SaddleNumber" onclick="sortTable(1)">Number</th>
-       <th id="Age" onclick="sortTable(2)">Age</th>
-       <th id="Barrier" onclick="sortTable(3)">Barrier</th>
-       <th id="PrizeMoneyWon" onclick="sortTable(4)">Prize money</th>
-       <th onclick="sortTable(5)">Speed</th>
-       <th id="Weight" onclick="sortTable(6)">Weight</th>
-       <th onclick="sortTable(7)">Jockey</th>
-       <th onclick="sortTable(8)">Track win percentage</th>
-       <th onclick="sortTable(9)">Track place percentage</th>
-       <th onclick="sortTable(10)">T/D win percentage</th>
-       <th onclick="sortTable(11)">T/D place percentage</th>
-       <th onclick="sortTable(12)">Win percentage</th>
-       <th onclick="sortTable(13)">Place percentage</th>
-       <th onclick="sortTable(14)">Average prize</th>
-       <th onclick="sortTable(15)">Form</th>
-       <th onclick="sortTable(16)">Steve&Co points</th>
+       <th style="width:5%" id="Name" onclick="sortTable(0)">Name</th>
+       <th style="width:5%" id="SaddleNumber" onclick="sortTable(1)" size="10">Number</th>
+       <th style="width:5%" id="Age" onclick="sortTable(2)" size="10">Age</th>
+       <th style="width:5%" id="Barrier" onclick="sortTable(3)" size="10">Barrier</th>
+       <th style="width:7%" id="PrizeMoneyWon" onclick="sortTable(4)">Prize money</th>
+       <th style="width:5%" onclick="sortTable(5)">Speed</th>
+       <th style="width:5%" id="Weight" onclick="sortTable(6)">Weight</th>
+       <th style="width:10%" onclick="sortTable(7)">Jockey</th>
+       <!-- <th onclick="sortTable(8)">Track win percentage</th> -->
+       <!-- <th onclick="sortTable(9)">Track place percentage</th> -->
+       <th style="width:5%" onclick="sortTable(8)">T/D win percentage</th>
+       <th style="width:5%" onclick="sortTable(9)">T/D place percentage</th>
+       <!-- <th onclick="sortTable(12)">Win percentage</th> -->
+       <!-- <th onclick="sortTable(13)">Place percentage</th> -->
+       <th style="width:6%" onclick="sortTable(10)">Average prize</th>
+       <th style="width:15%" onclick="sortTable(11)">Form</th>
+       <th style="width:4%" onclick="sortTable(12)">Steve&Co points</th>
+       <th style="width:18%" onclick="sortTable(13)">Comments</th>
      </tr>
    </thead>
    <tbody id="horses_table_body">
@@ -94,6 +95,8 @@
       var pointsCellArray = [];
       var averagePrizeArray = [];
       var availableHorses = [];
+      var commentCellArray = [];
+      var pointBreakdownComentArray = [];
       document.getElementById('track_name').innerHTML = "Track name: " + raceName + " " + raceNumber;
       document.getElementById('track_distance').innerHTML = "Track distance: " + raceDistance;
       document.getElementById('track_condition').innerHTML = "Track condition: " + raceCondition;
@@ -113,20 +116,23 @@
         var weightCell = row.insertCell();
         var jockeyCell = row.insertCell();
 
-        var trackWinPercentCell = row.insertCell();
-        var trackPlacePercentCell = row.insertCell();
+        // var trackWinPercentCell = row.insertCell();
+        // var trackPlacePercentCell = row.insertCell();
 
         var trackDistanceWinPercentCell = row.insertCell();
         var trackDistancePlacePercentCell = row.insertCell();
 
-        var winPercentCell = row.insertCell();
-        var placePercentCell = row.insertCell();
+        // var winPercentCell = row.insertCell();
+        // var placePercentCell = row.insertCell();
+
         var averagePrizeMoneyCell = row.insertCell();
         var formCell = row.insertCell();
 
         var steveCoPointsCell = row.insertCell();
         pointsCellArray.push(steveCoPointsCell);
 
+        var commentCell = row.insertCell();
+        commentCellArray.push(commentCell);
         // horse info 
         var name = horse.Name;
         var age = horse.Age;
@@ -159,19 +165,22 @@
         weightCell.innerHTML = weight;
         jockeyCell.innerHTML = jockey;
 
-        trackWinPercentCell.innerHTML = trackPerformanceWinPercentage;
-        trackPlacePercentCell.innerHTML = trackPerformancePlacePercentage;
+        // trackWinPercentCell.innerHTML = trackPerformanceWinPercentage;
+        // trackPlacePercentCell.innerHTML = trackPerformancePlacePercentage;
 
         trackDistanceWinPercentCell.innerHTML = trackDistanceWinPercentage;
         trackDistancePlacePercentCell.innerHTML = trackDistancePlacePercentage;
 
-        winPercentCell.innerHTML = winPercentage;
-        placePercentCell.innerHTML = placePercentage;
+        // winPercentCell.innerHTML = winPercentage;
+        // placePercentCell.innerHTML = placePercentage;
 
         var averagePrizeMoney = Math.round(prizeMoney/horse.stats.allPerformance.starts);
         averagePrizeArray.push(averagePrizeMoney);
         
         averagePrizeMoneyCell.innerHTML = Math.round(averagePrizeMoney);
+
+        // MARK: Points calculation
+        var pointBreakdownComment = "";
         var formBonus = 0;
         var previousForms = horse.PreviousForm;
         previousForms.forEach(form => {
@@ -179,63 +188,87 @@
           if(form.Finish <= 3){
             if(jockey.toLowerCase() == form.Jockey){
               formBonus += 5;
+              pointBreakdownComment += "-Same jock points +5<br/>"
             }
             if(barrier == form.Barrier){
               formBonus += 3;
+              pointBreakdownComment += "-Same barrier points +3<br/>";
             } else if(barrier == (form.Barrier + 1) || barrier == (form.Barrier - 1)) {
+              pointBreakdownComment += "-Barrier +-1 points +2<br/>";
               formBonus += 2;
             } else if (barrier == (form.Barrier + 2) || barrier == (form.Barrier - 2)){
+              pointBreakdownComment += "-Barrier +-3 points +1<br/>";
               formBonus += 1;
             } else {
+              pointBreakdownComment += "-Barrier points -3<br/>";
               formBonus -= 3;
             }
 
             if(raceDistance == form.Distance){
+              pointBreakdownComment += "-Same race distance points +5<br/>";
               formBonus += 5;
             }
 
             if(Number(form.StartingPrice) > 30 && Number(form.Margin) < 0.5){
+              pointBreakdownComment += "-Special points +5<br/>";
               formBonus += 5;
             }
 
             if(form.RacePrizeMoney > 5000000){
+              pointBreakdownComment += "-RacePrizeMoney > 5,000,000 points +15<br/>";
               formBonus += 15;
             } else if(form.RacePrizeMoney > 3000000) {
+              pointBreakdownComment += "-RacePrizeMoney > 3,000,000 points +13<br/>";
               formBonus += 13;
             } else if(form.RacePrizeMoney > 1000000) {
+              pointBreakdownComment += "-RacePrizeMoney > 1,000,000 points +10<br/>";
               formBonus += 10;
             } else if(form.RacePrizeMoney > 800000) {
+              pointBreakdownComment += "-RacePrizeMoney > 800,000 points +9<br/>";
               formBonus += 9;
             } else if(form.RacePrizeMoney > 500000) {
+              pointBreakdownComment += "-RacePrizeMoney > 500,000 points +7<br/>";
               formBonus += 7;
             } else if(form.RacePrizeMoney > 200000) {
+              pointBreakdownComment += "-RacePrizeMoney > 200,000 points +5<br/>";
               formBonus += 5;
             } else if(form.RacePrizeMoney > 100000) {
+              pointBreakdownComment += "-RacePrizeMoney > 100,000 points +4<br/>";
               formBonus += 4;
             } else if(form.RacePrizeMoney > 70000) {
+              pointBreakdownComment += "-RacePrizeMoney > 75,000 points +3<br/>";
               formBonus += 3;
             } else if(form.RacePrizeMoney > 50000) {
+              pointBreakdownComment += "-RacePrizeMoney > 50,000 points +2<br/>";
               formBonus += 2;
             } else if(form.RacePrizeMoney > 20000) {
+              pointBreakdownComment += "-RacePrizeMoney > 50,000 points +1<br/>";
               formBonus += 1;
             }
           }
+
           if(form.Finish == 1){
+            pointBreakdownComment += "-Finsihed 1st points +5<br/>";
             formBonus += 5;
           } else if (form.Finish == 2){
+            pointBreakdownComment += "-Finsihed 2nd points +3<br/>";
             formBonus += 3;
           } else if(form.Finish == 3){
+            pointBreakdownComment += "-Finsihed 3rd points +1<br/>";
             formBonus += 1;
           } else if(form.Finish == form.NumberOfRunners){
+            pointBreakdownComment += "-Finsihed last points -5<br/>";
             formBonus -= 5;
           } else if(form.Finish > (form.NumberOfRunners/2)){
+            pointBreakdownComment += "-Finsihed > 1/2 runners points -3 <br/>";
             formBonus -= 3;
           } else if (form.Finish > (form.NumberOfRunners/3)){
+            pointBreakdownComment += "-Finsihed > 1/3 runners points -1 <br/>";
             formBonus -= 1;
           }
 
           var formDistance = form.Distance;
-          if(formDistance == raceDistance && form.TimeRan != "N/A" && form.Finish <= 3){
+          if(form.TimeRan != "N/A" && form.Finish <= 3){
             var timeRan = form.TimeRan;
             var finish = form.Finish;
             var margin = form.Margin;
@@ -247,11 +280,11 @@
             var mili = secondArray[1];
 
             var miliToWin = Number(mili);
-            // Margin Bonus to time, 0.1L = 5ms
+            // Margin Bonus to time, 0.1L = 3ms
             if(finish == 1){
-              miliToWin -= Number(form.Margin) * 10 * 5;
+              miliToWin -= Number(form.Margin) * 10 * 3;
             } else {
-              miliToWin += Number(form.Margin) * 10 * 5;
+              miliToWin += Number(form.Margin) * 10 * 3;
             }
             console.log("000 miliToWin == " + miliToWin);
             //Barrier Bonus to time, 1 Barrier = 33ms
@@ -288,7 +321,7 @@
         // Bonus on jockeys
         // var jockeyBonus = getJockeyPoints(jockey, state);
         var jockeyBonus = 0;
-        console.log("jockeyBonus: " + jockeyBonus);
+        pointBreakdownComment += "-Jockey points + " + jockeyBonus + " <br/>";
         var speedBarrierBonus = 0;
         var speedDistanceBonus = 0;
         var trackBonus = 0;
@@ -300,57 +333,71 @@
         } else {
           trackBonus += Math.round(trackPerformanceWinPercentage/10);
         }
+        pointBreakdownComment += "-Track perfomance points " + trackBonus + " <br/>";
         if(isNaN(trackPerformancePlacePercentage) || trackPerformanceWinPercentage == 0 || trackPerformancePlacePercentage < 50){
           distanceBonus = -10;
         } else {
           distanceBonus += Math.round(trackPerformancePlacePercentage/10);
         }
-
+        pointBreakdownComment += "-Distance perfomance points " + distanceBonus + " <br/>";
         if(isNaN(trackDistancePlacePercentage)  || trackDistanceWinPercentage == 0|| trackDistancePlacePercentage < 50){
           trackDistanceBonus = -10;
         } else {
           trackDistanceBonus += Math.round(trackDistancePlacePercentage/10);
         }
-
+        pointBreakdownComment += "-T/D perfomance points " + distanceBonus + " <br/>";
 
         if(barrier < 5) { 
           speedBarrierBonus = speed - barrier;
         }
+
+        pointBreakdownComment += "-Speed/Barrier points " + speedBarrierBonus + " <br/>";
+
         if(raceDistance <= 1100){
           speedDistanceBonus = speed;
         }
+        pointBreakdownComment += "-Speed/Distance points " + speedDistanceBonus + " <br/>";
+
 
         if(age >= 4 < 7){
           ageBonus += 3;
-        } else if(age > 3 &&  age < 8) {
+          pointBreakdownComment += "-Age 4-6, points " + ageBonus + " <br/>";
+        } else if(age >= 3 &&  age < 8) {
           ageBonus += 1;
+          pointBreakdownComment += "-Age 3 or 7, points " + ageBonus + " <br/>";
         } else {
           ageBonus -= 3;
+          pointBreakdownComment += "-Age less than 3 or more than 7, points " + ageBonus + " <br/>";
         }
         console.log("jockeyBonus: " + jockeyBonus + " || speedBarrierBonus: " + speedBarrierBonus + " || speedDistanceBonus: " + speedDistanceBonus + " || distanceBonus: " + distanceBonus + " || trackDistanceBonus: " + trackDistanceBonus + " || formBonus: " + formBonus);
         var bonus = jockeyBonus + speedBarrierBonus + speedDistanceBonus + distanceBonus + trackDistanceBonus + formBonus + ageBonus;
         // var totalPoints = bonus + penalty;
-        steveCoPointsCell.innerHTML = bonus; 
+        steveCoPointsCell.innerHTML = bonus;
+        pointBreakdownComentArray.push(pointBreakdownComment);
       }
     });
     averagePrizeArray.sort((a, b) => a - b);
     console.log("AVERAGE PRIZE = " + averagePrizeArray);
     console.log("horses= " + horses.length);
+    var finalPoints = 0;
     averagePrizeArray.forEach(function(prize, prizeIndex){
-
-    availableHorses.forEach(function(horse, horseIndex){
-    var prizeMoney = horse.PrizeMoneyWon;
-    var averagePrizeMoney = Math.round(prizeMoney/horse.stats.allPerformance.starts);
-    if(averagePrizeMoney == prize){
-      console.log("horseIndex: " + horseIndex);
-      var points = Number(pointsCellArray[horseIndex].innerHTML);
-      console.log("points: " + points + " || prize bonus: " + prizeIndex);
-      console.log("total: " + Number(points + prizeIndex));
-
-      pointsCellArray[horseIndex].innerHTML = Number(points + prizeIndex);
-    }
+      availableHorses.forEach(function(horse, horseIndex){
+        var prizeMoney = horse.PrizeMoneyWon;
+        var averagePrizeMoney = Math.round(prizeMoney/horse.stats.allPerformance.starts);
+        if(averagePrizeMoney == prize){
+          console.log("horseIndex: " + horseIndex);
+          var points = Number(pointsCellArray[horseIndex].innerHTML);
+          console.log("points: " + points + " || prize bonus: " + prizeIndex);
+          console.log("total: " + Number(points + prizeIndex));
+          finalPoints = Number(points + prizeIndex);
+          pointsCellArray[horseIndex].innerHTML = finalPoints;
+          pointBreakdownComentArray[horseIndex] += "-Average Prize, points " + prizeIndex + " <br/>";
+          pointBreakdownComentArray[horseIndex] += "-Total points =  " + finalPoints + " <br/>";
+          console.log("comment = " + pointBreakdownComentArray[horseIndex]);
+          commentCellArray[horseIndex].innerHTML = pointBreakdownComentArray[horseIndex];
+        }
+      });
   });
-});
 }
 
 function getJockeyPoints(jockey, state) {
