@@ -12,33 +12,34 @@
 </head>
 <body>
   <div class="logo">Magic Calulation</div>
-  <h1>Welcome to magic calculator</h1>
   <div class="inputWrapper">
     <label for="fname">Race Form URL:</label>
-    <input type="text" id="url" size="100"><br><br>
+    <input type="text" id="url" size="100">
     <input type="submit" value="Submit" onclick="submitForm();">
   </div>
+  <div class="track">
+    <p id="track_name"></p>       
+    <p id="track_distance"></p>
+    <p id="track_condition"></p>
+  </div>
 
-  <p id="track_name"></p>
-  <p id="track_distance"></p>
-  <p id="track_condition"></p>
   <table id="horses_table" class="sortable">
    <thead>
      <tr>
-       <th style="width:5%" id="Name" onclick="sortTable(0)">Name</th>
-       <th style="width:5%" id="SaddleNumber" onclick="sortTable(1)" size="10">Number</th>
-       <th style="width:5%" id="Age" onclick="sortTable(2)" size="10">Age</th>
-       <th style="width:5%" id="Barrier" onclick="sortTable(3)" size="10">Barrier</th>
-       <th style="width:7%" id="PrizeMoneyWon" onclick="sortTable(4)">Prize money</th>
-       <th style="width:5%" onclick="sortTable(5)">Speed</th>
-       <th style="width:5%" id="Weight" onclick="sortTable(6)">Weight</th>
-       <th style="width:10%" onclick="sortTable(7)">Jockey</th>
-       <th style="width:5%" onclick="sortTable(8)">T/D win percentage</th>
-       <th style="width:5%" onclick="sortTable(9)">T/D place percentage</th>
-       <th style="width:6%" onclick="sortTable(10)">Average prize</th>
-       <th style="width:15%" onclick="sortTable(11)">Form</th>
-       <th style="width:4%" onclick="sortTable(12)">Steve&Co points</th>
-       <th style="width:18%" onclick="sortTable(13)">Comments</th>
+       <th class="name" id="Name" onclick="sortTable(0)">Name</th>
+       <th class="number" id="SaddleNumber" onclick="sortTable(1)" size="10">Number</th>
+       <th class="age" id="Age" onclick="sortTable(2)" size="10">Age</th>
+       <th class="barrier" id="Barrier" onclick="sortTable(3)" size="10">Barrier</th>
+       <th class="prize" id="PrizeMoneyWon" onclick="sortTable(4)">Prize money</th>
+       <th class="speed" onclick="sortTable(5)">Speed</th>
+       <th class="weight" id="Weight" onclick="sortTable(6)">Weight</th>
+       <th class="jockey" onclick="sortTable(7)">Jockey</th>
+       <th class="win" onclick="sortTable(8)">T/D win percentage</th>
+       <th class="place" onclick="sortTable(9)">T/D place percentage</th>
+       <th class="prize" onclick="sortTable(10)">Average prize</th>
+       <th class="form" onclick="sortTable(11)">Form</th>
+       <th class="point" onclick="sortTable(12)">Steve&Co points</th>
+       <th class="comment" onclick="sortTable(13)">Comments</th>
      </tr>
    </thead>
    <tbody id="horses_table_body">

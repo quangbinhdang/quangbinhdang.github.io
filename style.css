@@ -6,3 +6,38 @@ td {
   border: 1px solid;
   border-collapse: collapse;
 }
+
+.inputWrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+#url {
+  margin-left: 20px;
+  margin-right: 20px;
+}
+
+.inputWrapper p {
+}
+
+.track {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.track p {
+  margin: 0 10px;
+  font-size: 24px;
+}
+
+#horses_table {
+  width: 100%;
+}
+
+th {
+  cursor: pointer;
+}
