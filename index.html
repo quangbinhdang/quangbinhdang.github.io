@@ -316,8 +316,13 @@
               expectedWinTime = minute + ":" + second + "." + mili;
               console.log("minute = " + timeArray[0] + " second = " + second + " mili = " + remainingMiliToWin);
             }
-            
-            var formInfo = "Distance: "+ form.Distance+"<br/>Finish: " + finish + "/" + form.NumberOfRunners + "<br/>Time: " + timeRan + "</br>In run: "+ form.InRun + "</br>Expected Time: "+ expectedWinTime + "<br/>Margin: " + margin + "<br/>----------------<br/>";
+            var formInfo = "";
+            if(form.Distance == raceDistance){
+              formInfo += "<b>Distance: "+ form.Distance +"</b>";
+            } else {
+              formInfo += "Distance: "+ form.Distance;
+            }
+            formInfo += "<br/>Finish: " + finish + "/" + form.NumberOfRunners + "<br/>Time: " + timeRan + "</br>In run: "+ form.InRun + "</br>Expected Time: "+ expectedWinTime + "<br/>Margin: " + margin + "<br/>----------------<br/>";
             formCell.innerHTML += formInfo;
           }
 
