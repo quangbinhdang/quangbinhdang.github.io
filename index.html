@@ -97,6 +97,7 @@
       var availableHorses = [];
       var commentCellArray = [];
       var pointBreakdownComentArray = [];
+      var totalPrizePool = 0;
       document.getElementById('track_name').innerHTML = "Track name: " + raceName + " " + raceNumber;
       document.getElementById('track_distance').innerHTML = "Track distance: " + raceDistance;
       document.getElementById('track_condition').innerHTML = "Track condition: " + raceCondition;
@@ -183,6 +184,8 @@
         var pointBreakdownComment = "";
         var formBonus = 0;
         var previousForms = horse.PreviousForm;
+
+        totalPrizePool += Math.round(averagePrizeMoney);
         previousForms.forEach(form => {
           if(form.Finish <= 3){
             
@@ -406,7 +409,7 @@
           pointBreakdownComment += "-Age less than 3 or more than 7, points " + ageBonus + " <br/>";
         }
         console.log("jockeyBonus: " + jockeyBonus + " || speedBarrierBonus: " + speedBarrierBonus + " || speedDistanceBonus: " + speedDistanceBonus + " || distanceBonus: " + distanceBonus + " || trackDistanceBonus: " + trackDistanceBonus + " || formBonus: " + formBonus);
-        var bonus = jockeyBonus + speedBarrierBonus + speedDistanceBonus + distanceBonus + trackDistanceBonus + conditionBonus + formBonus + ageBonus;
+        var bonus = jockeyBonus + speedBarrierBonus + speedDistanceBonus + distanceBonus + trackBonus + trackDistanceBonus + conditionBonus + formBonus + ageBonus;
         // var totalPoints = bonus + penalty;
         steveCoPointsCell.innerHTML = bonus;
         pointBreakdownComentArray.push(pointBreakdownComment);
@@ -416,18 +419,20 @@
     console.log("AVERAGE PRIZE = " + averagePrizeArray);
     console.log("horses= " + horses.length);
     var finalPoints = 0;
+    var totalPointsFromPrizePool = totalPrizePool/1000;
     averagePrizeArray.forEach(function(prize, prizeIndex){
       availableHorses.forEach(function(horse, horseIndex){
         var prizeMoney = horse.PrizeMoneyWon;
         var averagePrizeMoney = Math.round(prizeMoney/horse.stats.allPerformance.starts);
         if(averagePrizeMoney == prize){
+          var pointsForPrize = Math.round((averagePrizeMoney/totalPrizePool) * totalPointsFromPrizePool);
           console.log("horseIndex: " + horseIndex);
           var points = Number(pointsCellArray[horseIndex].innerHTML);
-          console.log("points: " + points + " || prize bonus: " + prizeIndex);
-          console.log("total: " + Number(points + prizeIndex));
-          finalPoints = Number(points + prizeIndex);
+          console.log("points: " + points + " || prize bonus: " + pointsForPrize);
+          console.log("total: " + Number(points + pointsForPrize));
+          finalPoints = Number(points + pointsForPrize);
           pointsCellArray[horseIndex].innerHTML = finalPoints;
-          pointBreakdownComentArray[horseIndex] += "-Average Prize, points " + prizeIndex + " <br/>";
+          pointBreakdownComentArray[horseIndex] += "-Average Prize, points " + pointsForPrize + " <br/>";
           pointBreakdownComentArray[horseIndex] += "-Total points =  " + finalPoints + " <br/>";
           console.log("comment = " + pointBreakdownComentArray[horseIndex]);
           commentCellArray[horseIndex].innerHTML = pointBreakdownComentArray[horseIndex];
