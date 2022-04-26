@@ -269,6 +269,8 @@
 
           var formDistance = form.Distance;
           if(form.Finish <= 3){
+
+            var trackCondition = form.TrackCondition;
             var finish = form.Finish;
             var margin = form.Margin;
             var timeRan = 0;
@@ -321,6 +323,11 @@
               formInfo += "<b>Distance: "+ form.Distance +"</b>";
             } else {
               formInfo += "Distance: "+ form.Distance;
+            }
+            if(trackCondition == raceCondition.charAt(0)){
+              formInfo += "<br/><b>Condition: "+ trackCondition +"</b>";
+            } else {
+              formInfo += "<br/>Condition: "+ trackCondition;
             }
             formInfo += "<br/>Finish: " + finish + "/" + form.NumberOfRunners + "<br/>Time: " + timeRan + "</br>In run: "+ form.InRun + "</br>Expected Time: "+ expectedWinTime + "<br/>Margin: " + margin + "<br/>----------------<br/>";
             formCell.innerHTML += formInfo;
