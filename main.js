@@ -798,16 +798,18 @@ function sortTable(n) {
     rows = table.rows;
     /* Loop through all table rows (except the
         first, which contains table headers): */
-    for (i = 1; i < rows.length - 1; i++) {
+    for (let i = 1; i < rows.length - 1; i++) {
       // Start by saying there should be no switching:
       shouldSwitch = false;
       /* Get the two elements you want to compare,
             one from current row and one from the next: */
-      x = rows[i].getElementsByTagName("TD")[n];
-      y = rows[i + 1].getElementsByTagName("TD")[n];
+      x = rows[i].getElementsByTagName("TD")[n] + 100;
+      y = rows[i + 1].getElementsByTagName("TD")[n] + 100;
       /* Check if the two rows should switch place,
             based on the direction, asc or desc: */
-      logger("MYTEST = " + isNaN(x.innerHTML) + " || " + isNaN(y.innerHTML));
+      console.log(
+        "MYTEST = " + isNaN(x.innerHTML) + " || " + isNaN(y.innerHTML)
+      );
       if (!isNaN(x.innerHTML) && !isNaN(y.innerHTML)) {
         if (dir == "asc") {
           if (Number(x.innerHTML) > Number(y.innerHTML)) {
