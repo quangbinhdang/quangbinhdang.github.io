@@ -156,7 +156,7 @@ function process_horse(table, race) {
                 averagePrizeMoney = Math.round(
                     runner.PrizeMoneyWon / runner.stats.allPerformance.starts
                 );
-                averagePrizeArray.push(averagePrizeMoney);
+                averagePrizeArray.push({ "runner": runner.Name, "averagePrizeMoney": averagePrizeMoney });
             }
             averagePrizeMoneyCell.innerHTML = Math.round(averagePrizeMoney);
 
@@ -207,21 +207,21 @@ function process_horse(table, race) {
                 trackDistanceBonus += Math.round(trackDistancePlacePercentage * 0.2);
             }
             pointBreakdownComment +=
-                "-T/D perfomance points " + distanceBonus + " <br/>";
+                "-T/D perfomance points " + trackDistanceBonus + " <br/>";
 
             // if (barrier < 5) {
             //     speedBarrierBonus = Math.round(runner.SpeedMap.Speed - runner.Barrier);
             //     pointBreakdownComment +=
             //         "-Speed/Barrier points " + speedBarrierBonus + " <br/>";
             // }
-            if(barrier >= 1 && barrier <=5) {
-              barrierBonus += 10;
-              pointBreakdownComment +=
+            if (barrier >= 1 && barrier <= 5) {
+                barrierBonus += 10;
+                pointBreakdownComment +=
                     "-Barrier points " + barrierBonus + " <br/>";
-            } else if(barrier >= 5 && barrier <= 8) {
-              barrierBonus += 5;
-              pointBreakdownComment +=
-                    "-Barrier points" + barrierBonus + " <br/>";
+            } else if (barrier >= 5 && barrier <= 8) {
+                barrierBonus += 5;
+                pointBreakdownComment +=
+                    "-Barrier points " + barrierBonus + " <br/>";
             }
 
             if (race.Distance <= 1000) {
@@ -244,14 +244,14 @@ function process_horse(table, race) {
 
             var bonus = 0;
             var weightBonus = 0;
-            if(runner.Weight.Total > 55){
-              weightBonus -= ((Number(runner.Weight.Total)-55) * 2);
-              pointBreakdownComment += "-Weight points " + weightBonus + " <br/>";
+            if (runner.Weight.Total > 55) {
+                weightBonus -= ((Number(runner.Weight.Total) - 55) * 2);
+                pointBreakdownComment += "-Weight points " + weightBonus + " <br/>";
             }
 
-            if (runner.Weight.Total < 55){
-              weightBonus += ((55-Number(runner.Weight.Total)) * 2);
-              pointBreakdownComment += "-Weight points " + weightBonus + " <br/>";
+            if (runner.Weight.Total < 55) {
+                weightBonus += ((55 - Number(runner.Weight.Total)) * 2);
+                pointBreakdownComment += "-Weight points " + weightBonus + " <br/>";
             }
             if (WITH_JOCK) {
                 var jockeyBonus = getJockeyPoints(runner.Jockey.Name, state);
@@ -277,7 +277,7 @@ function process_horse(table, race) {
                     trackDistanceBonus +
                     conditionBonus +
                     formBonus +
-                    ageBonus+
+                    ageBonus +
                     barrierBonus +
                     weightBonus;
             }
@@ -296,7 +296,7 @@ function process_horse(table, race) {
                 " || conditionBonus: " +
                 conditionBonus +
                 " || formBonus: " +
-                formBonus + 
+                formBonus +
                 " || ageBonus: " +
                 barrierBonus +
                 " || barrierBonus: " +
@@ -308,38 +308,47 @@ function process_horse(table, race) {
             pointBreakdownComentArray.push(pointBreakdownComment);
         }
     });
-    averagePrizeArray.sort((a, b) => a - b);
+    // averagePrizeArray.sort(compareRunnerByPrizeMoney);
     var finalPoints = 0;
     var totalPointsFromPrizePool = totalPrizePool / 500;
-    averagePrizeArray.forEach(function(prize, prizeIndex) {
-        availableRunners.forEach(function(runner, runnerIndex) {
-            if (!isNaN(runner.PrizeMoneyWon)) {
-                var averagePrizeMoney = Math.round(
-                    runner.PrizeMoneyWon / runner.stats.allPerformance.starts
-                );
-                if (averagePrizeMoney == prize) {
+
+    availableRunners.forEach(function(runner, runnerIndex) {
+        averagePrizeArray.forEach(function(object, prizeIndex) {
+            if (object.runner == runner.Name) {
+                var points = Number(pointsCellArray[runnerIndex].innerHTML);
+                if (!isNaN(object.averagePrizeMoney)) {
                     var pointsForPrize = Math.round(
-                        (averagePrizeMoney / totalPrizePool) * totalPointsFromPrizePool
+                        (Number(object.averagePrizeMoney) / totalPrizePool) * totalPointsFromPrizePool
                     );
                     logger("horseIndex: " + runnerIndex);
-                    var points = Number(pointsCellArray[runnerIndex].innerHTML);
-
-                    console.log("points: " + points + " || prize bonus: " + pointsForPrize);
                     logger("points: " + points + " || prize bonus: " + pointsForPrize);
                     logger("total: " + Number(points + pointsForPrize));
                     finalPoints = Number(points + pointsForPrize);
-                    pointsCellArray[runnerIndex].innerHTML = finalPoints;
+
                     pointBreakdownComentArray[runnerIndex] +=
                         "-Average Prize, points " + pointsForPrize + " <br/>";
-                    pointBreakdownComentArray[runnerIndex] +=
-                        "-Total points =  " + finalPoints + " <br/>";
-                    logger("comment = " + pointBreakdownComentArray[runnerIndex]);
-                    commentCellArray[runnerIndex].innerHTML =
-                        pointBreakdownComentArray[runnerIndex];
+
+                } else {
+                    finalPoints = Number(points);
                 }
+                pointsCellArray[runnerIndex].innerHTML = finalPoints;
+                pointBreakdownComentArray[runnerIndex] +=
+                    "-Total points =  " + finalPoints + " <br/>";
+                commentCellArray[runnerIndex].innerHTML +=
+                    pointBreakdownComentArray[runnerIndex];
             }
         });
     });
+}
+
+function compareRunnerByPrizeMoney(a, b) {
+    if (a.averagePrizeMoney < b.averagePrizeMoney) {
+        return -1;
+    }
+    if (a.averagePrizeMoney > b.averagePrizeMoney) {
+        return 1;
+    }
+    return 0;
 }
 
 // Magic Calculating
@@ -351,17 +360,17 @@ function getFormBonus(race, runner, pointBreakdownComment, formCell) {
     var lastIndex = 0;
 
     runner.PreviousForm.forEach(function(form, formIndex) {
-      
-      if (form.Finish >= 4 && form.Finish <= 7) {
-          specialFinish++;
-      } else {
-        if(formIndex == 0 || formIndex == 1){//streak wont count if the runner won recently
-          shouldCountSpecial = false;
+
+        if (form.Finish >= 4 && form.Finish <= 7) {
+            specialFinish++;
+        } else {
+            if (formIndex == 0 || formIndex == 1) { //streak wont count if the runner won recently
+                shouldCountSpecial = false;
+            }
+            if (specialFinish < 3) {
+                specialFinish = 0;
+            }
         }
-        if(specialFinish < 4){
-          specialFinish = 0;
-        }
-      }
         // Last start too far
         // if (formIndex == 0 && daysToToday(form.Date) > 90) {
         //     pointBreakdownComment += "-Last start is too far, " + daysToToday(form.Date) + "days, points -10<br/>";
@@ -488,8 +497,8 @@ function getFormBonus(race, runner, pointBreakdownComment, formCell) {
             /* =========== Penalty ============ */
             // 1. very risky to win too closely 
             if (form.Finish == 1) {
-                if(Number(form.Margin) > 3.5 && formIndex == 0){
-                  pointBreakdownComment += "-Last time won like a god, points "+ Math.round(form.Margin) +"<br/>";
+                if (Number(form.Margin) > 3.5 && formIndex == 0) {
+                    pointBreakdownComment += "-Last time won like a god, points " + Math.round(form.Margin) + "<br/>";
                     formBonus += Number(form.Margin);
                 } else if (Number(form.Margin) <= 0.1) {
                     pointBreakdownComment += "-Won too close points -5 <br/>";
@@ -656,13 +665,13 @@ function getFormBonus(race, runner, pointBreakdownComment, formCell) {
 
         }
     });
-    if(shouldCountSpecial){
-      if (specialFinish >= 4) {
-        formBonus += 10;
-        pointBreakdownComment += "-Special finish streak points +10<br/>";
-      }
+    if (shouldCountSpecial) {
+        if (specialFinish >= 3) {
+            formBonus += 10;
+            pointBreakdownComment += "-Special finish streak points +10<br/>";
+        }
     }
-    
+
 
     returnObject = {
         formBonus: formBonus,
