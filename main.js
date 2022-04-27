@@ -2,6 +2,7 @@
 
 var ENABLE_LOG = false;
 var SHOW_JSON = false;
+var WITH_JOCK = false;
 
 function submitForm() {
     var bypassCORSURL = "https://corsproxy.giadang.com?url=";
@@ -175,9 +176,6 @@ function process_horse(table, race) {
 
             // MARK: Logic
             // Bonus on jockeys
-            // var jockeyBonus = getJockeyPoints(jockey, state);
-            var jockeyBonus = 0;
-            pointBreakdownComment += "-Jockey points + " + jockeyBonus + " <br/>";
             var speedBarrierBonus = 0;
             var speedDistanceBonus = 0;
             var trackBonus = 0;
@@ -195,17 +193,17 @@ function process_horse(table, race) {
             }
             pointBreakdownComment +=
                 "-Track perfomance points " + trackBonus + " <br/>";
-            // Never run this distance
-            if (
-                isNaN(distancePerformanceWinPercentage) || isNaN(distancePerformancePlacePercentage)) {
-                distanceBonus -= 3;
-            } else if (distancePerformanceWinPercentage == 0) { // Run this distance but never win
-                distanceBonus -= Math.round(distancePerformanceWinPercentage / 10);
-            } else {
-                distanceBonus += Math.round(distancePerformancePlacePercentage / 20);
-            }
-            pointBreakdownComment +=
-                "-Distance perfomance points " + distanceBonus + " <br/>";
+            // // Never run this distance
+            // if (
+            //     isNaN(distancePerformanceWinPercentage) || isNaN(distancePerformancePlacePercentage)) {
+            //     distanceBonus -= 3;
+            // } else if (distancePerformanceWinPercentage == 0) { // Run this distance but never win
+            //     distanceBonus -= Math.round(distancePerformanceWinPercentage / 10);
+            // } else {
+            //     distanceBonus += Math.round(distancePerformancePlacePercentage / 20);
+            // }
+            // pointBreakdownComment +=
+            //     "-Distance perfomance points " + distanceBonus + " <br/>";
             // Never run this T/D
             if (
                 isNaN(trackDistanceWinPercentage) || isNaN(trackDistancePlacePercentage)
@@ -220,13 +218,13 @@ function process_horse(table, race) {
                 "-T/D perfomance points " + distanceBonus + " <br/>";
 
             if (barrier < 5) {
-                speedBarrierBonus = runner.SpeedMap.Speed - runner.Barrier;
+                speedBarrierBonus = Math.round(runner.SpeedMap.Speed - runner.Barrier);
                 pointBreakdownComment +=
                     "-Speed/Barrier points " + speedBarrierBonus + " <br/>";
             }
 
             if (race.Distance <= 1100) {
-                speedDistanceBonus = runner.SpeedMap.Speed;
+                speedDistanceBonus = Math.round(runner.SpeedMap.Speed);
                 pointBreakdownComment +=
                     "-Speed/Distance points " + speedDistanceBonus + " <br/>";
             }
@@ -243,9 +241,7 @@ function process_horse(table, race) {
                     "-Age less than 3 or more than 7, points " + ageBonus + " <br/>";
             }
             logger(
-                "jockeyBonus: " +
-                jockeyBonus +
-                " || speedBarrierBonus: " +
+                "speedBarrierBonus: " +
                 speedBarrierBonus +
                 " || speedDistanceBonus: " +
                 speedDistanceBonus +
@@ -256,16 +252,31 @@ function process_horse(table, race) {
                 " || formBonus: " +
                 formBonus
             );
-            var bonus =
-                jockeyBonus +
-                speedBarrierBonus +
-                speedDistanceBonus +
-                distanceBonus +
-                trackBonus +
-                trackDistanceBonus +
-                conditionBonus +
-                formBonus +
-                ageBonus;
+            var bonus = 0;
+            if (WITH_JOCK) {
+                var jockeyBonus = getJockeyPoints(runner.Jockey.Name, state);
+                pointBreakdownComment += "-Jockey points + " + jockeyBonus + " <br/>";
+                bonus =
+                    speedBarrierBonus +
+                    speedDistanceBonus +
+                    distanceBonus +
+                    trackBonus +
+                    trackDistanceBonus +
+                    conditionBonus +
+                    formBonus +
+                    ageBonus;
+                bonus += jockeyBonus;
+            } else {
+                bonus =
+                    speedBarrierBonus +
+                    speedDistanceBonus +
+                    distanceBonus +
+                    trackBonus +
+                    trackDistanceBonus +
+                    conditionBonus +
+                    formBonus +
+                    ageBonus;
+            }
             // var totalPoints = bonus + penalty;
             steveCoPointsCell.innerHTML = bonus;
             pointBreakdownComentArray.push(pointBreakdownComment);
@@ -373,8 +384,11 @@ function getFormBonus(race, runner, pointBreakdownComment, formCell) {
                 }
 
                 if (form.Finish != 1 && form.Margin <= 0.3) {
-                    pointBreakdownComment += "-Finished at " + form.Finish + ", only" + form.Margin + "L far away, points +10<br/>";
-                    formBonus += 10; // finished too far away
+                    pointBreakdownComment += "-Finished at " + form.Finish + ", only " + form.Margin + "L far away, points +10<br/>";
+                    formBonus += 10;
+                } else if (form.Finish != 1 && form.Margin <= 1){
+                    pointBreakdownComment += "-Finished at " + form.Finish + ", only " + form.Margin + "L far away, points 5<br/>";
+                    formBonus += 10;
                 }
 
                 if (form.RacePrizeMoney > 5000000) {
@@ -467,16 +481,35 @@ function getFormBonus(race, runner, pointBreakdownComment, formCell) {
                 var expectedWinTime = "N/A";
 
                 if (form.TrackCondition == race.Meeting.TrackCondition.charAt(0)) {
-                    conditionBonus = 5;
+                    switch (form.Finish) {
+                        case 1:
+                            conditionBonus = 5;
+                            break;
+                        case 2:
+                            conditionBonus = 3;
+                            break;
+                        case 3:
+                            conditionBonus = 1;
+                            break;
+
+                    }
+
                     pointBreakdownComment +=
                         "-Condition points " + conditionBonus + " <br/>";
                 }
 
                 if (form.TimeRan != "N/A") {
+                    var minute = 0;
+                    var secondArray = [];
                     timeRan = form.TimeRan;
                     timeArray = timeRan.split(":");
-                    var minute = timeArray[0];
-                    var secondArray = timeArray[1].split(".");
+                    if (timeArray.length != 1) {
+                        minute = timeArray[0];
+                        secondArray = timeArray[1].split(".");
+                    } else {
+                        secondArray = timeArray[0].split(".");
+                    }
+
                     var second = secondArray[0];
                     var mili = secondArray[1];
 
@@ -604,252 +637,364 @@ function logger(text) {
 
 // Get bonus points by jockeys
 function getJockeyPoints(jockey, state) {
-    logger(
+    console.log(
         "Jock = " + jockey.toLowerCase() + " | State = " + state.toLowerCase()
     );
+    var points = 0;
     switch (state.toLowerCase()) {
         case "nsw".toLowerCase():
             switch (jockey.toLowerCase()) {
                 case "James McDonald".toLowerCase():
-                    return 20;
+                    points = 20;
+                    break;
                 case "William Pike".toLowerCase():
-                    return 20;
+                    points = 20;
+                    break;
                 case "Ashley Morgan".toLowerCase():
-                    return 19;
+                    points = 19;
+                    break;
                 case "Hugh Bowman".toLowerCase():
-                    return 18;
-                case "James McDonald".toLowerCase():
-                    return 17;
-                case "Jason Collett".toLowerCase():
-                    return 16;
+                    points = 18;
+                    break;
                 case "Tommy Berry".toLowerCase():
-                    return 15;
+                    points = 17;
+                    break;
+                case "Jason Collett".toLowerCase():
+                    points = 16;
+                    break;
                 case "Dylan Gibbons".toLowerCase():
-                    return 14;
+                    points = 15;
+                    break;
                 case "Mathew Cahill".toLowerCase():
-                    return 13;
-                case "Reece Jones".toLowerCase():
-                    return 12;
+                    points = 14;
+                    break;
                 case "Grant Buckley".toLowerCase():
-                    return 11;
+                    points = 13;
+                    break;
+                case "Reece Jones".toLowerCase():
+                    points = 12;
+                    break;
+                case "Grant Buckley".toLowerCase():
+                    points = 11;
+                    break;
                 case "Tim Clark".toLowerCase():
-                    return 10;
+                    points = 10;
+                    break;
                 case "Winona Costin".toLowerCase():
-                    return 9;
+                    points = 9;
+                    break;
                 case "Brodie Loy".toLowerCase():
-                    return 8;
+                    points = 8;
+                    break;
                 case "Ben Looker".toLowerCase():
-                    return 7;
+                    points = 7;
+                    break;
                 case "Jackson Searle".toLowerCase():
-                    return 6;
+                    points = 6;
+                    break;
                 case "Jeff Penza".toLowerCase():
-                    return 5;
+                    points = 5;
+                    break;
                 case "Brooke Stower".toLowerCase():
-                    return 4;
+                    points = 4;
+                    break;
                 case "Aaron Bullock".toLowerCase():
-                    return 3;
+                    points = 3;
+                    break;
                 case "Christian Reith".toLowerCase():
-                    return 2;
+                    points = 2;
+                    break;
                 case "Mikayla Weir".toLowerCase():
-                    return 1;
+                    points = 1;
+                    break;
                 default:
-                    return 0;
+                    points = 0;
+                    break;
             }
             break;
 
         case "Vic".toLowerCase():
             switch (jockey.toLowerCase()) {
                 case "Damian Lane".toLowerCase():
-                    return 20;
+                    points = 20;
+                    break;
                 case "J Allen".toLowerCase():
-                    return 19;
+                    points = 19;
+                    break;
                 case "Jye McNeil".toLowerCase():
-                    return 18;
+                    points = 18;
+                    break;
                 case "Damien Thornton".toLowerCase():
-                    return 17;
+                    points = 17;
+                    break;
                 case "Jordan Childs".toLowerCase():
-                    return 16;
+                    points = 16;
+                    break;
                 case "Jason Collett".toLowerCase():
-                    return 15;
+                    points = 15;
+                    break;
                 case "Jarrod Fry".toLowerCase():
-                    return 14;
+                    points = 14;
+                    break;
                 case "Craig Newitt".toLowerCase():
-                    return 13;
+                    points = 13;
+                    break;
                 case "Patrick Moloney".toLowerCase():
-                    return 12;
+                    points = 12;
+                    break;
                 case "Will Gordon".toLowerCase():
-                    return 11;
+                    points = 11;
+                    break;
                 case "Zac Spain".toLowerCase():
-                    return 10;
+                    points = 10;
+                    break;
                 case "Jamie Kah".toLowerCase():
-                    return 9;
+                    points = 9;
+                    break;
                 case "Damien Oliver".toLowerCase():
-                    return 8;
+                    points = 8;
+                    break;
                 case "Michael Dee".toLowerCase():
-                    return 7;
+                    points = 7;
+                    break;
                 case "Beau Mertens".toLowerCase():
-                    return 6;
+                    points = 6;
+                    break;
                 case "Blaike McDougall".toLowerCase():
-                    return 6;
+                    points = 6;
+                    break;
                 case "Brett Prebble".toLowerCase():
-                    return 5;
+                    points = 5;
+                    break;
                 case "Declan Bates".toLowerCase():
-                    return 5;
+                    points = 5;
+                    break;
                 case "Josh Richards".toLowerCase():
-                    return 4;
+                    points = 4;
+                    break;
                 case "Jack Hill".toLowerCase():
-                    return 3;
+                    points = 3;
+                    break;
                 case "Craig Williams".toLowerCase():
-                    return 2;
+                    points = 2;
+                    break;
                 case "Dean Holland".toLowerCase():
-                    return 1;
+                    points = 1;
+                    break;
                 default:
-                    return 0;
+                    points = 0;
+                    break;
             }
             break;
 
         case "WA".toLowerCase():
             switch (jockey.toLowerCase()) {
                 case "Clint Johnston-Porter".toLowerCase():
-                    return 20;
+                    points = 20;
+                    break;
                 case "Chris Parnham".toLowerCase():
-                    return 19;
+                    points = 19;
+                    break;
                 case "Natasha Faithfull".toLowerCase():
-                    return 18;
+                    points = 18;
+                    break;
                 case "Holly Watson".toLowerCase():
-                    return 17;
+                    points = 17;
+                    break;
                 case "Brad Rawiller".toLowerCase():
-                    return 16;
+                    points = 16;
+                    break;
                 case "Shaun O'Donnell".toLowerCase():
-                    return 15;
+                    points = 15;
+                    break;
                 case "Troy Turner".toLowerCase():
-                    return 14;
+                    points = 14;
+                    break;
                 case "Joseph Azzopardi".toLowerCase():
-                    return 13;
+                    points = 13;
+                    break;
                 case "Jason Whiting".toLowerCase():
-                    return 12;
+                    points = 12;
+                    break;
                 case "Shaun McGruddy".toLowerCase():
-                    return 11;
+                    points = 11;
+                    break;
                 case "Lucy Warwick".toLowerCase():
-                    return 10;
+                    points = 10;
+                    break;
                 case "Laqdar Ramoly".toLowerCase():
-                    return 9;
+                    points = 9;
+                    break;
                 case "Patrick Carbery".toLowerCase():
-                    return 8;
+                    points = 8;
+                    break;
                 case "Keshaw Dhurun".toLowerCase():
-                    return 7;
+                    points = 7;
+                    break;
                 case "Brad Parnham".toLowerCase():
-                    return 6;
+                    points = 6;
+                    break;
                 case "Kyra Yuill".toLowerCase():
-                    return 5;
+                    points = 5;
+                    break;
                 case "Lisa Staples".toLowerCase():
-                    return 4;
+                    points = 4;
+                    break;
                 case "Andrew Castle".toLowerCase():
-                    return 3;
+                    points = 3;
+                    break;
                 case "Jade McNaught".toLowerCase():
-                    return 2;
+                    points = 2;
+                    break;
                 case "Jordan Turner".toLowerCase():
-                    return 1;
+                    points = 1;
+                    break;
                 default:
-                    return 0;
+                    points = 0;
+                    break;
             }
             break;
 
         case "SA".toLowerCase():
             switch (jockey.toLowerCase()) {
                 case "Kayla Crowther".toLowerCase():
-                    return 20;
+                    points = 20;
+                    break;
                 case "Barend Vorster".toLowerCase():
-                    return 19;
+                    points = 19;
+                    break;
                 case "Ben Price".toLowerCase():
-                    return 18;
+                    points = 18;
+                    break;
                 case "Jake Toeroek".toLowerCase():
-                    return 17;
+                    points = 17;
+                    break;
                 case "Jason Holder".toLowerCase():
-                    return 16;
+                    points = 16;
+                    break;
                 case "Angus Chung".toLowerCase():
-                    return 15;
+                    points = 15;
+                    break;
                 case "Ryan Hurdle".toLowerCase():
-                    return 14;
+                    points = 14;
+                    break;
                 case "Todd Pannell".toLowerCase():
-                    return 13;
+                    points = 13;
+                    break;
                 case "Paul Gatt".toLowerCase():
-                    return 12;
+                    points = 12;
+                    break;
                 case "Dom Tourneur".toLowerCase():
-                    return 11;
+                    points = 11;
+                    break;
                 case "Justin Potter".toLowerCase():
-                    return 10;
+                    points = 10;
+                    break;
                 case "Jacob Opperman".toLowerCase():
-                    return 9;
+                    points = 9;
+                    break;
                 case "Ellis Wong".toLowerCase():
-                    return 8;
+                    points = 8;
+                    break;
                 case "Karl Zechner".toLowerCase():
-                    return 7;
+                    points = 7;
+                    break;
                 case "Teagan Voorham".toLowerCase():
-                    return 6;
+                    points = 6;
+                    break;
                 case "Jessica Eaton".toLowerCase():
-                    return 5;
+                    points = 5;
+                    break;
                 case "Anna Jordsjo".toLowerCase():
-                    return 4;
+                    points = 4;
+                    break;
                 case "Sophie Logan".toLowerCase():
-                    return 3;
+                    points = 3;
+                    break;
                 case "Jeffrey Maund".toLowerCase():
-                    return 2;
+                    points = 2;
+                    break;
                 case "Stacey Callow".toLowerCase():
-                    return 1;
+                    points = 1;
+                    break;
                 default:
-                    return 0;
+                    points = 0;
+                    break;
             }
             break;
         case "QLD".toLowerCase():
             switch (jockey.toLowerCase()) {
                 case "James Orman".toLowerCase():
-                    return 20;
+                    points = 20;
+                    break;
                 case "Ryan Maloney".toLowerCase():
-                    return 19;
+                    points = 19;
+                    break;
                 case "Jasmine Cornish".toLowerCase():
-                    return 18;
+                    points = 18;
+                    break;
                 case "Kyle Wilson-Taylor".toLowerCase():
-                    return 17;
+                    points = 17;
+                    break;
                 case "Ryan Wiggins".toLowerCase():
-                    return 16;
+                    points = 16;
+                    break;
                 case "Tahlia Fenlon".toLowerCase():
-                    return 15;
+                    points = 15;
+                    break;
                 case "Justin Stanley".toLowerCase():
-                    return 14;
+                    points = 14;
+                    break;
                 case "Lacey Morrison".toLowerCase():
-                    return 13;
+                    points = 13;
+                    break;
                 case "Angela Jones".toLowerCase():
-                    return 12;
+                    points = 12;
+                    break;
                 case "Noel Callow".toLowerCase():
-                    return 11;
+                    points = 11;
+                    break;
                 case "Jim Byrne".toLowerCase():
-                    return 10;
+                    points = 10;
+                    break;
                 case "Zac Lloyd".toLowerCase():
-                    return 9;
+                    points = 9;
+                    break;
                 case "Boris Thornton".toLowerCase():
-                    return 8;
+                    points = 8;
+                    break;
                 case "Jaden Lloyd".toLowerCase():
-                    return 7;
+                    points = 7;
+                    break;
                 case "Ben Thompson".toLowerCase():
-                    return 6;
+                    points = 6;
+                    break;
                 case "Tiffani Brooker".toLowerCase():
-                    return 5;
+                    points = 5;
+                    break;
                 case "Samantha Collett".toLowerCase():
-                    return 4;
+                    points = 4;
+                    break;
                 case "Nathan Day".toLowerCase():
-                    return 3;
+                    points = 3;
+                    break;
                 case "Marnu Potgieter".toLowerCase():
-                    return 2;
+                    points = 2;
+                    break;
                 case "Les Tilley".toLowerCase():
-                    return 1;
+                    points = 1;
+                    break;
                 default:
-                    return 0;
+                    points = 0;
+                    break;
             }
             break;
         default:
-            return 0;
+            points = 0;
+            break;
     }
+    console.log("JOCK POINTS = " + points);
+    return points * 3 / 10;
 }
 
 // SUPPORT
