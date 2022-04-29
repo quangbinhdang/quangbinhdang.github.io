@@ -451,7 +451,7 @@ function getWeightBonus(race, runner, highestWeight, lowestWeight, pointBreakdow
 // Barrier bonus accounts for 15% total points = 150 points
 function getNumberOfHorseBonus(race, runner, pointBreakdownComment) {
     var numberOfHorseBonus = 0;
-    pointBreakdownComment += "-Number of horses points " + numberOfHorseBonus + " <br/>";
+    // pointBreakdownComment += "-Number of horses points " + numberOfHorseBonus + " <br/>";
     var result = { "points": numberOfHorseBonus, "pointBreakdownComment": pointBreakdownComment };
     return result;
 }
@@ -480,15 +480,10 @@ function getTrackConditionBonus(race, runner, pointBreakdownComment) {
         winPercentage = Number(runner.stats.syntheticPerformance.wins) / Number(runner.stats.syntheticPerformance.starts);
         placePercentage = (Number(runner.stats.syntheticPerformance.seconds) + Number(runner.stats.syntheticPerformance.seconds) + Number(runner.stats.syntheticPerformance.thirds)) / Number(runner.stats.syntheticPerformance.starts);
     }
-    console.log(" RUNNER = " + runner.Name);
     if (hasStart) { // has run under this condition before
         trackConditionBonus += 15; // +15 for having race on this track/distance
-        console.log("000 trackConditionBonus = " + trackConditionBonus);
-        console.log(" placePercentage = " + placePercentage + " || winPercentage " + winPercentage);
         trackConditionBonus += Math.round(placePercentage * 35); // 35 points for 100% place
-        console.log("1111 trackConditionBonus = " + trackConditionBonus);
         trackConditionBonus += Math.round(winPercentage * 50); // 50 points for 100% win
-        console.log("2222 trackConditionBonus = " + trackConditionBonus);
     }
 
     pointBreakdownComment += "-Condition points " + trackConditionBonus + " <br/>";
@@ -541,6 +536,7 @@ function getFormBonus(race, runner, pointBreakdownComment, formCell) {
     var shouldCountSpecial = true;
     var specialFinish = 0;
     var specialFinishPoints = 0;
+    var numberOfHorseBonus = 0;
 
     runner.PreviousForm.forEach(function (form, formIndex) {
 
@@ -558,8 +554,17 @@ function getFormBonus(race, runner, pointBreakdownComment, formCell) {
         if (formIndex == 0 && daysToToday(form.Date) > 90) {
             lastStartBonus -= 10;
         }
-
-
+        // Number of horse bonus
+        if(form.Finish == 1 && (form.NumberOfRunners == race.NumberOfRunners)){
+            numberOfHorseBonus += 15;
+            pointBreakdownComment += "-Similar number of horse, points " + Math.round(numberOfHorseBonus) + "</br>";
+        } else if (form.Finish == 2 && (form.NumberOfRunners == race.NumberOfRunners)){
+            numberOfHorseBonus += 10;
+            pointBreakdownComment += "-Similar number of horse, points " + Math.round(numberOfHorseBonus) + "</br>";
+        } else if (form.Finish == 3 && (form.NumberOfRunners == race.NumberOfRunners)){
+            numberOfHorseBonus += 5;
+            pointBreakdownComment += "-Similar number of horse, points " + Math.round(numberOfHorseBonus) + "</br>";
+        }
         // ignore data > 3 months
         if (daysToToday(form.Date) <= 90) {
             if (form.Finish <= 3) {
@@ -902,6 +907,11 @@ function getFormBonus(race, runner, pointBreakdownComment, formCell) {
     // prize pool = 100 points
     if (pointPool != 0) {
         formBonus = Math.round(totalPoints / pointPool * 100);
+    }
+
+    if (numberOfHorseBonus != 0){
+        formBonus += Number(numberOfHorseBonus);
+        console.log("-Similar number of horse, points " + Math.round(numberOfHorseBonus));
     }
     pointBreakdownComment += "-Form bonus points " + formBonus + "<br/>";
     returnObject = {
