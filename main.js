@@ -311,6 +311,29 @@ function process_horse(table, race) {
             }
         });
     });
+
+    // sort table by points
+    sortTable(12);
+    sortTable(12);
+    var table, rows, i, x = 0;
+    table = document.getElementById("horses_table");
+    rows = table.rows;
+    var recommended = "";
+    var length = rows.length - 1;
+    if(length > 4){
+        length = 4;
+    }
+    for (i = 1; i <= length; i++) {
+        x = rows[i].getElementsByTagName("TD")[1];
+        if(i == 1){
+            recommended += "" + x.innerHTML;
+        } else {
+            recommended += ", " + x.innerHTML;
+        }
+    }
+    document.getElementById("recommended_winners").innerHTML =
+        "Recommended: " + recommended;
+    
 }
 
 // Calculate track, distance and track distance bonus, this should account for 20 percent total, = 200 points, track = 30, distance = 70 track distance = 100
@@ -948,369 +971,370 @@ function getJockeyPoints(jockey, state) {
         "Jock = " + jockey.toLowerCase() + " | State = " + state.toLowerCase()
     );
     var points = 0;
-    // switch (state.toLowerCase()) {
-    //     case "nsw".toLowerCase():
-    //         switch (jockey.toLowerCase()) {
-    //             case "James McDonald".toLowerCase():
-    //                 points = 20;
-    //                 break;
-    //             case "William Pike".toLowerCase():
-    //                 points = 20;
-    //                 break;
-    //             case "Ashley Morgan".toLowerCase():
-    //                 points = 19;
-    //                 break;
-    //             case "Hugh Bowman".toLowerCase():
-    //                 points = 18;
-    //                 break;
-    //             case "Tommy Berry".toLowerCase():
-    //                 points = 17;
-    //                 break;
-    //             case "Jason Collett".toLowerCase():
-    //                 points = 16;
-    //                 break;
-    //             case "Dylan Gibbons".toLowerCase():
-    //                 points = 15;
-    //                 break;
-    //             case "Mathew Cahill".toLowerCase():
-    //                 points = 14;
-    //                 break;
-    //             case "Grant Buckley".toLowerCase():
-    //                 points = 13;
-    //                 break;
-    //             case "Reece Jones".toLowerCase():
-    //                 points = 12;
-    //                 break;
-    //             case "Grant Buckley".toLowerCase():
-    //                 points = 11;
-    //                 break;
-    //             case "Tim Clark".toLowerCase():
-    //                 points = 10;
-    //                 break;
-    //             case "Winona Costin".toLowerCase():
-    //                 points = 9;
-    //                 break;
-    //             case "Brodie Loy".toLowerCase():
-    //                 points = 8;
-    //                 break;
-    //             case "Ben Looker".toLowerCase():
-    //                 points = 7;
-    //                 break;
-    //             case "Jackson Searle".toLowerCase():
-    //                 points = 6;
-    //                 break;
-    //             case "Jeff Penza".toLowerCase():
-    //                 points = 5;
-    //                 break;
-    //             case "Brooke Stower".toLowerCase():
-    //                 points = 4;
-    //                 break;
-    //             case "Aaron Bullock".toLowerCase():
-    //                 points = 3;
-    //                 break;
-    //             case "Christian Reith".toLowerCase():
-    //                 points = 2;
-    //                 break;
-    //             case "Mikayla Weir".toLowerCase():
-    //                 points = 1;
-    //                 break;
-    //             default:
-    //                 points = 0;
-    //                 break;
-    //         }
-    //         break;
+    switch (state.toLowerCase()) {
+        case "nsw".toLowerCase():
+            switch (jockey.toLowerCase()) {
+                case "James McDonald".toLowerCase():
+                    points = 20;
+                    break;
+                case "William Pike".toLowerCase():
+                    points = 20;
+                    break;
+                case "Ashley Morgan".toLowerCase():
+                    points = 19;
+                    break;
+                case "Hugh Bowman".toLowerCase():
+                    points = 18;
+                    break;
+                case "Tommy Berry".toLowerCase():
+                    points = 17;
+                    break;
+                case "Jason Collett".toLowerCase():
+                    points = 16;
+                    break;
+                case "Dylan Gibbons".toLowerCase():
+                    points = 15;
+                    break;
+                case "Mathew Cahill".toLowerCase():
+                    points = 14;
+                    break;
+                case "Grant Buckley".toLowerCase():
+                    points = 13;
+                    break;
+                case "Reece Jones".toLowerCase():
+                    points = 12;
+                    break;
+                case "Grant Buckley".toLowerCase():
+                    points = 11;
+                    break;
+                case "Tim Clark".toLowerCase():
+                    points = 10;
+                    break;
+                case "Winona Costin".toLowerCase():
+                    points = 9;
+                    break;
+                case "Brodie Loy".toLowerCase():
+                    points = 8;
+                    break;
+                case "Ben Looker".toLowerCase():
+                    points = 7;
+                    break;
+                case "Jackson Searle".toLowerCase():
+                    points = 6;
+                    break;
+                case "Jeff Penza".toLowerCase():
+                    points = 5;
+                    break;
+                case "Brooke Stower".toLowerCase():
+                    points = 4;
+                    break;
+                case "Aaron Bullock".toLowerCase():
+                    points = 3;
+                    break;
+                case "Christian Reith".toLowerCase():
+                    points = 2;
+                    break;
+                case "Mikayla Weir".toLowerCase():
+                    points = 1;
+                    break;
+                default:
+                    points = 0;
+                    break;
+            }
+            break;
 
-    //     case "Vic".toLowerCase():
-    //         switch (jockey.toLowerCase()) {
-    //             case "Damian Lane".toLowerCase():
-    //                 points = 20;
-    //                 break;
-    //             case "J Allen".toLowerCase():
-    //                 points = 19;
-    //                 break;
-    //             case "Jye McNeil".toLowerCase():
-    //                 points = 18;
-    //                 break;
-    //             case "Damien Thornton".toLowerCase():
-    //                 points = 17;
-    //                 break;
-    //             case "Jordan Childs".toLowerCase():
-    //                 points = 16;
-    //                 break;
-    //             case "Jason Collett".toLowerCase():
-    //                 points = 15;
-    //                 break;
-    //             case "Jarrod Fry".toLowerCase():
-    //                 points = 14;
-    //                 break;
-    //             case "Craig Newitt".toLowerCase():
-    //                 points = 13;
-    //                 break;
-    //             case "Patrick Moloney".toLowerCase():
-    //                 points = 12;
-    //                 break;
-    //             case "Will Gordon".toLowerCase():
-    //                 points = 11;
-    //                 break;
-    //             case "Zac Spain".toLowerCase():
-    //                 points = 10;
-    //                 break;
-    //             case "Jamie Kah".toLowerCase():
-    //                 points = 9;
-    //                 break;
-    //             case "Damien Oliver".toLowerCase():
-    //                 points = 8;
-    //                 break;
-    //             case "Michael Dee".toLowerCase():
-    //                 points = 7;
-    //                 break;
-    //             case "Beau Mertens".toLowerCase():
-    //                 points = 6;
-    //                 break;
-    //             case "Blaike McDougall".toLowerCase():
-    //                 points = 6;
-    //                 break;
-    //             case "Brett Prebble".toLowerCase():
-    //                 points = 5;
-    //                 break;
-    //             case "Declan Bates".toLowerCase():
-    //                 points = 5;
-    //                 break;
-    //             case "Josh Richards".toLowerCase():
-    //                 points = 4;
-    //                 break;
-    //             case "Jack Hill".toLowerCase():
-    //                 points = 3;
-    //                 break;
-    //             case "Craig Williams".toLowerCase():
-    //                 points = 2;
-    //                 break;
-    //             case "Dean Holland".toLowerCase():
-    //                 points = 1;
-    //                 break;
-    //             default:
-    //                 points = 0;
-    //                 break;
-    //         }
-    //         break;
+        case "Vic".toLowerCase():
+            switch (jockey.toLowerCase()) {
+                case "Damian Lane".toLowerCase():
+                    points = 20;
+                    break;
+                case "J Allen".toLowerCase():
+                    points = 19;
+                    break;
+                case "Jye McNeil".toLowerCase():
+                    points = 18;
+                    break;
+                case "Damien Thornton".toLowerCase():
+                    points = 17;
+                    break;
+                case "Jordan Childs".toLowerCase():
+                    points = 16;
+                    break;
+                case "Jason Collett".toLowerCase():
+                    points = 15;
+                    break;
+                case "Jarrod Fry".toLowerCase():
+                    points = 14;
+                    break;
+                case "Craig Newitt".toLowerCase():
+                    points = 13;
+                    break;
+                case "Patrick Moloney".toLowerCase():
+                    points = 12;
+                    break;
+                case "Will Gordon".toLowerCase():
+                    points = 11;
+                    break;
+                case "Zac Spain".toLowerCase():
+                    points = 10;
+                    break;
+                case "Jamie Kah".toLowerCase():
+                    points = 9;
+                    break;
+                case "Damien Oliver".toLowerCase():
+                    points = 8;
+                    break;
+                case "Michael Dee".toLowerCase():
+                    points = 7;
+                    break;
+                case "Beau Mertens".toLowerCase():
+                    points = 6;
+                    break;
+                case "Blaike McDougall".toLowerCase():
+                    points = 6;
+                    break;
+                case "Brett Prebble".toLowerCase():
+                    points = 5;
+                    break;
+                case "Declan Bates".toLowerCase():
+                    points = 5;
+                    break;
+                case "Josh Richards".toLowerCase():
+                    points = 4;
+                    break;
+                case "Jack Hill".toLowerCase():
+                    points = 3;
+                    break;
+                case "Craig Williams".toLowerCase():
+                    points = 2;
+                    break;
+                case "Dean Holland".toLowerCase():
+                    points = 1;
+                    break;
+                default:
+                    points = 0;
+                    break;
+            }
+            break;
 
-    //     case "WA".toLowerCase():
-    //         switch (jockey.toLowerCase()) {
-    //             case "Clint Johnston-Porter".toLowerCase():
-    //                 points = 20;
-    //                 break;
-    //             case "Chris Parnham".toLowerCase():
-    //                 points = 19;
-    //                 break;
-    //             case "Natasha Faithfull".toLowerCase():
-    //                 points = 18;
-    //                 break;
-    //             case "Holly Watson".toLowerCase():
-    //                 points = 17;
-    //                 break;
-    //             case "Brad Rawiller".toLowerCase():
-    //                 points = 16;
-    //                 break;
-    //             case "Shaun O'Donnell".toLowerCase():
-    //                 points = 15;
-    //                 break;
-    //             case "Troy Turner".toLowerCase():
-    //                 points = 14;
-    //                 break;
-    //             case "Joseph Azzopardi".toLowerCase():
-    //                 points = 13;
-    //                 break;
-    //             case "Jason Whiting".toLowerCase():
-    //                 points = 12;
-    //                 break;
-    //             case "Shaun McGruddy".toLowerCase():
-    //                 points = 11;
-    //                 break;
-    //             case "Lucy Warwick".toLowerCase():
-    //                 points = 10;
-    //                 break;
-    //             case "Laqdar Ramoly".toLowerCase():
-    //                 points = 9;
-    //                 break;
-    //             case "Patrick Carbery".toLowerCase():
-    //                 points = 8;
-    //                 break;
-    //             case "Keshaw Dhurun".toLowerCase():
-    //                 points = 7;
-    //                 break;
-    //             case "Brad Parnham".toLowerCase():
-    //                 points = 6;
-    //                 break;
-    //             case "Kyra Yuill".toLowerCase():
-    //                 points = 5;
-    //                 break;
-    //             case "Lisa Staples".toLowerCase():
-    //                 points = 4;
-    //                 break;
-    //             case "Andrew Castle".toLowerCase():
-    //                 points = 3;
-    //                 break;
-    //             case "Jade McNaught".toLowerCase():
-    //                 points = 2;
-    //                 break;
-    //             case "Jordan Turner".toLowerCase():
-    //                 points = 1;
-    //                 break;
-    //             default:
-    //                 points = 0;
-    //                 break;
-    //         }
-    //         break;
+        case "WA".toLowerCase():
+            switch (jockey.toLowerCase()) {
+                case "Clint Johnston-Porter".toLowerCase():
+                    points = 20;
+                    break;
+                case "Chris Parnham".toLowerCase():
+                    points = 19;
+                    break;
+                case "Natasha Faithfull".toLowerCase():
+                    points = 18;
+                    break;
+                case "Holly Watson".toLowerCase():
+                    points = 17;
+                    break;
+                case "Brad Rawiller".toLowerCase():
+                    points = 16;
+                    break;
+                case "Shaun O'Donnell".toLowerCase():
+                    points = 15;
+                    break;
+                case "Troy Turner".toLowerCase():
+                    points = 14;
+                    break;
+                case "Joseph Azzopardi".toLowerCase():
+                    points = 13;
+                    break;
+                case "Jason Whiting".toLowerCase():
+                    points = 12;
+                    break;
+                case "Shaun McGruddy".toLowerCase():
+                    points = 11;
+                    break;
+                case "Lucy Warwick".toLowerCase():
+                    points = 10;
+                    break;
+                case "Laqdar Ramoly".toLowerCase():
+                    points = 9;
+                    break;
+                case "Patrick Carbery".toLowerCase():
+                    points = 8;
+                    break;
+                case "Keshaw Dhurun".toLowerCase():
+                    points = 7;
+                    break;
+                case "Brad Parnham".toLowerCase():
+                    points = 6;
+                    break;
+                case "Kyra Yuill".toLowerCase():
+                    points = 5;
+                    break;
+                case "Lisa Staples".toLowerCase():
+                    points = 4;
+                    break;
+                case "Andrew Castle".toLowerCase():
+                    points = 3;
+                    break;
+                case "Jade McNaught".toLowerCase():
+                    points = 2;
+                    break;
+                case "Jordan Turner".toLowerCase():
+                    points = 1;
+                    break;
+                default:
+                    points = 0;
+                    break;
+            }
+            break;
 
-    //     case "SA".toLowerCase():
-    //         switch (jockey.toLowerCase()) {
-    //             case "Kayla Crowther".toLowerCase():
-    //                 points = 20;
-    //                 break;
-    //             case "Barend Vorster".toLowerCase():
-    //                 points = 19;
-    //                 break;
-    //             case "Ben Price".toLowerCase():
-    //                 points = 18;
-    //                 break;
-    //             case "Jake Toeroek".toLowerCase():
-    //                 points = 17;
-    //                 break;
-    //             case "Jason Holder".toLowerCase():
-    //                 points = 16;
-    //                 break;
-    //             case "Angus Chung".toLowerCase():
-    //                 points = 15;
-    //                 break;
-    //             case "Ryan Hurdle".toLowerCase():
-    //                 points = 14;
-    //                 break;
-    //             case "Todd Pannell".toLowerCase():
-    //                 points = 13;
-    //                 break;
-    //             case "Paul Gatt".toLowerCase():
-    //                 points = 12;
-    //                 break;
-    //             case "Dom Tourneur".toLowerCase():
-    //                 points = 11;
-    //                 break;
-    //             case "Justin Potter".toLowerCase():
-    //                 points = 10;
-    //                 break;
-    //             case "Jacob Opperman".toLowerCase():
-    //                 points = 9;
-    //                 break;
-    //             case "Ellis Wong".toLowerCase():
-    //                 points = 8;
-    //                 break;
-    //             case "Karl Zechner".toLowerCase():
-    //                 points = 7;
-    //                 break;
-    //             case "Teagan Voorham".toLowerCase():
-    //                 points = 6;
-    //                 break;
-    //             case "Jessica Eaton".toLowerCase():
-    //                 points = 5;
-    //                 break;
-    //             case "Anna Jordsjo".toLowerCase():
-    //                 points = 4;
-    //                 break;
-    //             case "Sophie Logan".toLowerCase():
-    //                 points = 3;
-    //                 break;
-    //             case "Jeffrey Maund".toLowerCase():
-    //                 points = 2;
-    //                 break;
-    //             case "Stacey Callow".toLowerCase():
-    //                 points = 1;
-    //                 break;
-    //             default:
-    //                 points = 0;
-    //                 break;
-    //         }
-    //         break;
-    //     case "QLD".toLowerCase():
-    //         switch (jockey.toLowerCase()) {
-    //             case "James Orman".toLowerCase():
-    //                 points = 20;
-    //                 break;
-    //             case "Ryan Maloney".toLowerCase():
-    //                 points = 19;
-    //                 break;
-    //             case "Jasmine Cornish".toLowerCase():
-    //                 points = 18;
-    //                 break;
-    //             case "Kyle Wilson-Taylor".toLowerCase():
-    //                 points = 17;
-    //                 break;
-    //             case "Ryan Wiggins".toLowerCase():
-    //                 points = 16;
-    //                 break;
-    //             case "Tahlia Fenlon".toLowerCase():
-    //                 points = 15;
-    //                 break;
-    //             case "Justin Stanley".toLowerCase():
-    //                 points = 14;
-    //                 break;
-    //             case "Lacey Morrison".toLowerCase():
-    //                 points = 13;
-    //                 break;
-    //             case "Angela Jones".toLowerCase():
-    //                 points = 12;
-    //                 break;
-    //             case "Noel Callow".toLowerCase():
-    //                 points = 11;
-    //                 break;
-    //             case "Jim Byrne".toLowerCase():
-    //                 points = 10;
-    //                 break;
-    //             case "Zac Lloyd".toLowerCase():
-    //                 points = 9;
-    //                 break;
-    //             case "Boris Thornton".toLowerCase():
-    //                 points = 8;
-    //                 break;
-    //             case "Jaden Lloyd".toLowerCase():
-    //                 points = 7;
-    //                 break;
-    //             case "Ben Thompson".toLowerCase():
-    //                 points = 6;
-    //                 break;
-    //             case "Tiffani Brooker".toLowerCase():
-    //                 points = 5;
-    //                 break;
-    //             case "Samantha Collett".toLowerCase():
-    //                 points = 4;
-    //                 break;
-    //             case "Nathan Day".toLowerCase():
-    //                 points = 3;
-    //                 break;
-    //             case "Marnu Potgieter".toLowerCase():
-    //                 points = 2;
-    //                 break;
-    //             case "Les Tilley".toLowerCase():
-    //                 points = 1;
-    //                 break;
-    //             default:
-    //                 points = 0;
-    //                 break;
-    //         }
-    //         break;
-    //     default:
-    //         points = 0;
-    //         break;
-    // }
-    if(jockeyList.jockeys === undefined){
-        return 0;
+        case "SA".toLowerCase():
+            switch (jockey.toLowerCase()) {
+                case "Kayla Crowther".toLowerCase():
+                    points = 20;
+                    break;
+                case "Barend Vorster".toLowerCase():
+                    points = 19;
+                    break;
+                case "Ben Price".toLowerCase():
+                    points = 18;
+                    break;
+                case "Jake Toeroek".toLowerCase():
+                    points = 17;
+                    break;
+                case "Jason Holder".toLowerCase():
+                    points = 16;
+                    break;
+                case "Angus Chung".toLowerCase():
+                    points = 15;
+                    break;
+                case "Ryan Hurdle".toLowerCase():
+                    points = 14;
+                    break;
+                case "Todd Pannell".toLowerCase():
+                    points = 13;
+                    break;
+                case "Paul Gatt".toLowerCase():
+                    points = 12;
+                    break;
+                case "Dom Tourneur".toLowerCase():
+                    points = 11;
+                    break;
+                case "Justin Potter".toLowerCase():
+                    points = 10;
+                    break;
+                case "Jacob Opperman".toLowerCase():
+                    points = 9;
+                    break;
+                case "Ellis Wong".toLowerCase():
+                    points = 8;
+                    break;
+                case "Karl Zechner".toLowerCase():
+                    points = 7;
+                    break;
+                case "Teagan Voorham".toLowerCase():
+                    points = 6;
+                    break;
+                case "Jessica Eaton".toLowerCase():
+                    points = 5;
+                    break;
+                case "Anna Jordsjo".toLowerCase():
+                    points = 4;
+                    break;
+                case "Sophie Logan".toLowerCase():
+                    points = 3;
+                    break;
+                case "Jeffrey Maund".toLowerCase():
+                    points = 2;
+                    break;
+                case "Stacey Callow".toLowerCase():
+                    points = 1;
+                    break;
+                default:
+                    points = 0;
+                    break;
+            }
+            break;
+        case "QLD".toLowerCase():
+            switch (jockey.toLowerCase()) {
+                case "James Orman".toLowerCase():
+                    points = 20;
+                    break;
+                case "Ryan Maloney".toLowerCase():
+                    points = 19;
+                    break;
+                case "Jasmine Cornish".toLowerCase():
+                    points = 18;
+                    break;
+                case "Kyle Wilson-Taylor".toLowerCase():
+                    points = 17;
+                    break;
+                case "Ryan Wiggins".toLowerCase():
+                    points = 16;
+                    break;
+                case "Tahlia Fenlon".toLowerCase():
+                    points = 15;
+                    break;
+                case "Justin Stanley".toLowerCase():
+                    points = 14;
+                    break;
+                case "Lacey Morrison".toLowerCase():
+                    points = 13;
+                    break;
+                case "Angela Jones".toLowerCase():
+                    points = 12;
+                    break;
+                case "Noel Callow".toLowerCase():
+                    points = 11;
+                    break;
+                case "Jim Byrne".toLowerCase():
+                    points = 10;
+                    break;
+                case "Zac Lloyd".toLowerCase():
+                    points = 9;
+                    break;
+                case "Boris Thornton".toLowerCase():
+                    points = 8;
+                    break;
+                case "Jaden Lloyd".toLowerCase():
+                    points = 7;
+                    break;
+                case "Ben Thompson".toLowerCase():
+                    points = 6;
+                    break;
+                case "Tiffani Brooker".toLowerCase():
+                    points = 5;
+                    break;
+                case "Samantha Collett".toLowerCase():
+                    points = 4;
+                    break;
+                case "Nathan Day".toLowerCase():
+                    points = 3;
+                    break;
+                case "Marnu Potgieter".toLowerCase():
+                    points = 2;
+                    break;
+                case "Les Tilley".toLowerCase():
+                    points = 1;
+                    break;
+                default:
+                    points = 0;
+                    break;
+            }
+            break;
+        default:
+            points = 0;
+            break;
     }
-    var reversedJockeys = jockeyList.jockeys;
-    reversedJockeys.forEach(function(jockeyName, point){
-        if(jockeyName.toLowerCase() == jockey.toLowerCase()){
-            points = 200 - point;
-        }
-    });
-    console.log("JOCK POINTS = " + points);
-    return Math.round(points / 2);
+    // if(jockeyList.jockeys === undefined){
+    //     return 0;
+    // }
+    // var reversedJockeys = jockeyList.jockeys;
+    // reversedJockeys.forEach(function(jockeyName, point){
+    //     if(jockeyName.toLowerCase() == jockey.toLowerCase()){
+    //         points = 200 - point;
+    //     }
+    // });
+    // console.log("JOCK POINTS = " + points);
+    // return Math.round(points / 2);
+    return Math.round(points * 10);
 }
 
 // SUPPORT
