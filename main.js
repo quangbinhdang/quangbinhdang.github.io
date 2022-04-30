@@ -319,9 +319,11 @@ function process_horse(table, race) {
     table = document.getElementById("horses_table");
     rows = table.rows;
     var recommended = "";
+    var danger = "";
     var length = rows.length - 1;
-    if(length > 4){
-        length = 4;
+    danger = rows[length].getElementsByTagName("TD")[1];
+    if(length > 5){
+        length = 5;
     }
     for (i = 1; i <= length; i++) {
         x = rows[i].getElementsByTagName("TD")[1];
@@ -333,6 +335,9 @@ function process_horse(table, race) {
     }
     document.getElementById("recommended_winners").innerHTML =
         "Recommended: " + recommended;
+
+    document.getElementById("danger").innerHTML =
+        "Danger: " + danger.innerHTML;
     
 }
 
@@ -712,20 +717,18 @@ function getFormBonus(race, runner, pointBreakdownComment, formCell) {
                 pointPool += 5;
             } else if (Number(form.Margin) <= 0.2) {
                 winTooClosePenalty -= 2;
-                pointPool += 5;
+                pointPool += 2;
             }
         }
         // 2. just won the same race previously 
         if (form.Finish == 1 && formIndex == 0 && form.Track == race.Meeting.Track && form.Distance == race.Distance) {
             sameRacePrevious -= 5;
-
             pointPool += 5; // same race previous close
         }
 
         // 4. Last start broke maiden
         if (form.Finish == 1 && formIndex == 0 && form.RaceClass.toLowerCase().includes("mdn")) {
             brokeMaiden -= 10;
-
             pointPool += 10; // broke maiden previous
         }
 
@@ -1140,7 +1143,7 @@ function getJockeyPoints(jockey, state) {
                 case "Troy Turner".toLowerCase():
                     points = 14;
                     break;
-                case "Joseph Azzopardi".toLowerCase():
+                case "J Azzopardi".toLowerCase():
                     points = 13;
                     break;
                 case "Jason Whiting".toLowerCase():
@@ -1149,7 +1152,7 @@ function getJockeyPoints(jockey, state) {
                 case "Shaun McGruddy".toLowerCase():
                     points = 11;
                     break;
-                case "Lucy Warwick".toLowerCase():
+                case "Lucy F Warwick".toLowerCase():
                     points = 10;
                     break;
                 case "Laqdar Ramoly".toLowerCase():
@@ -1173,7 +1176,7 @@ function getJockeyPoints(jockey, state) {
                 case "Andrew Castle".toLowerCase():
                     points = 3;
                     break;
-                case "Jade McNaught".toLowerCase():
+                case "Jade Mc Naught".toLowerCase():
                     points = 2;
                     break;
                 case "Jordan Turner".toLowerCase():
@@ -1292,6 +1295,9 @@ function getJockeyPoints(jockey, state) {
                     break;
                 case "Boris Thornton".toLowerCase():
                     points = 8;
+                    break;
+                case "Karl Zechner".toLowerCase():
+                    points = 7;
                     break;
                 case "Jaden Lloyd".toLowerCase():
                     points = 7;
