@@ -234,9 +234,9 @@ function process_horse(table, race) {
             pointBreakdownComment = weightBonusObject.pointBreakdownComment;
 
             // Number of horses bonus
-            var numberOfHorseBonusObject = getNumberOfHorseBonus(race, runner, pointBreakdownComment);
-            numberOfHorseBonus = numberOfHorseBonusObject.points;
-            pointBreakdownComment = numberOfHorseBonusObject.pointBreakdownComment;
+            // var numberOfHorseBonusObject = getNumberOfHorseBonus(race, runner, pointBreakdownComment);
+            // numberOfHorseBonus = numberOfHorseBonusObject.points;
+            // pointBreakdownComment = numberOfHorseBonusObject.pointBreakdownComment;
 
             // Track Condition Bonus
             var trackConditionBonusObject = getTrackConditionBonus(race, runner, pointBreakdownComment);
@@ -322,12 +322,12 @@ function process_horse(table, race) {
     var danger = "";
     var length = rows.length - 1;
     danger = rows[length].getElementsByTagName("TD")[1];
-    if(length > 5){
+    if (length > 5) {
         length = 5;
     }
     for (i = 1; i <= length; i++) {
         x = rows[i].getElementsByTagName("TD")[1];
-        if(i == 1){
+        if (i == 1) {
             recommended += "" + x.innerHTML;
         } else {
             recommended += ", " + x.innerHTML;
@@ -338,7 +338,7 @@ function process_horse(table, race) {
 
     document.getElementById("danger").innerHTML =
         "Danger: " + danger.innerHTML;
-    
+
 }
 
 // Calculate track, distance and track distance bonus, this should account for 20 percent total, = 200 points, track = 30, distance = 70 track distance = 100
@@ -349,7 +349,10 @@ function getTrackAndTrackDistanceBonus(race, runner, pointBreakdownComment) {
     var distancePerformancePlacePercentage = 0;
     var trackDistanceWinPercentage = 0;
     var trackDistancePlacePercentage = 0;
-
+    if (runner.stats.allPerformance.starts <= 3) { // only count if runner has more than 3 runs
+        var result = { "points": 0, "pointBreakdownComment": pointBreakdownComment };
+        return result;
+    }
     if (runner.stats.trackPerformance.hasStarts) {
         trackPerformanceWinPercentage = Math.round(
             (runner.stats.trackPerformance.wins /
@@ -358,7 +361,8 @@ function getTrackAndTrackDistanceBonus(race, runner, pointBreakdownComment) {
         );
         trackPerformancePlacePercentage = Math.round(
             ((runner.stats.trackPerformance.wins +
-                runner.stats.trackPerformance.seconds) /
+                runner.stats.trackPerformance.seconds +
+                runner.stats.trackPerformance.thirds) /
                 runner.stats.trackPerformance.starts) *
             100
         );
@@ -372,7 +376,8 @@ function getTrackAndTrackDistanceBonus(race, runner, pointBreakdownComment) {
         );
         distancePerformancePlacePercentage = Math.round(
             ((runner.stats.distancePerformance.wins +
-                runner.stats.distancePerformance.seconds) /
+                runner.stats.distancePerformance.seconds +
+                runner.stats.distancePerformance.thirds) /
                 runner.stats.distancePerformance.starts) *
             100
         );
@@ -386,7 +391,8 @@ function getTrackAndTrackDistanceBonus(race, runner, pointBreakdownComment) {
         );
         trackDistancePlacePercentage = Math.round(
             ((runner.stats.trackAndDistancePerformance.wins +
-                runner.stats.trackAndDistancePerformance.seconds) /
+                runner.stats.trackAndDistancePerformance.seconds +
+                runner.stats.trackAndDistancePerformance.thirds) /
                 runner.stats.trackAndDistancePerformance.starts) *
             100
         );
@@ -402,9 +408,13 @@ function getTrackAndTrackDistanceBonus(race, runner, pointBreakdownComment) {
 
     if (runner.stats.trackPerformance.hasStarts) {
         if (runner.stats.trackPerformance.starts >= 2) {
-            trackBonus += 5; // +5 for having race on this track
-            trackBonus += Math.round(trackPerformancePlacePercentage * 10 / 100); // 10 points for 100% place
-            trackBonus += Math.round(trackPerformanceWinPercentage * 15 / 100); // 15 points for 100% win
+            if (trackPerformancePlacePercentage > 0) {
+                trackBonus += 5; // +5 for having race on this track
+                trackBonus += Math.round(trackPerformancePlacePercentage * 10 / 100); // 10 points for 100% place
+                trackBonus += Math.round(trackPerformanceWinPercentage * 15 / 100); // 15 points for 100% win
+            } else {
+                trackBonus -= 15;
+            }
         }
     } else {
         trackBonus -= 15;
@@ -412,25 +422,33 @@ function getTrackAndTrackDistanceBonus(race, runner, pointBreakdownComment) {
     pointBreakdownComment +=
         "-Track perfomance points " + trackBonus + " <br/>";
 
-
     if (runner.stats.distancePerformance.hasStarts) {
         if (runner.stats.distancePerformance.starts >= 2) {
-            distanceBonus += 10; // +10 for having race on this distance
-            distanceBonus += Math.round(distancePerformancePlacePercentage * 20 / 100); // 20 points for 100% place
-            distanceBonus += Math.round(distancePerformanceWinPercentage * 40 / 100); // 30 points for 100% win
+            if (distancePerformancePlacePercentage > 0) {
+                distanceBonus += 10; // +10 for having race on this distance
+                distanceBonus += Math.round(distancePerformancePlacePercentage * 20 / 100); // 20 points for 100% place
+                distanceBonus += Math.round(distancePerformanceWinPercentage * 40 / 100); // 30 points for 100% win
+            } else {
+                distanceBonus -= 30;
+            }
         }
     } else {
-        distanceBonus -= 35;
+        distanceBonus -= 30;
     }
     pointBreakdownComment +=
         "-Distance perfomance points " + distanceBonus + " <br/>";
 
+    console.log("Runner name = " + runner.Name + " || trackDistancePlacePercentage = " + trackDistancePlacePercentage);
     if (runner.stats.trackAndDistancePerformance.hasStarts) {
-
         if (runner.stats.trackAndDistancePerformance.starts >= 2) {
-            trackDistanceBonus += 15; // +15 for having race on this track/distance
-            trackDistanceBonus += Math.round(trackDistancePlacePercentage * 35 / 100); // 35 points for 100% place
-            trackDistanceBonus += Math.round(trackDistanceWinPercentage * 50 / 100); // 50 points for 100% win
+            if (trackDistancePlacePercentage > 0) {
+                trackDistanceBonus += 15; // +15 for having race on this track/distance
+                trackDistanceBonus += Math.round(trackDistancePlacePercentage * 35 / 100); // 35 points for 100% place
+                trackDistanceBonus += Math.round(trackDistanceWinPercentage * 50 / 100); // 50 points for 100% win
+            } else {
+                trackDistanceBonus -= 50;
+            }
+
         }
     } else {
         trackDistanceBonus -= 50;
@@ -508,24 +526,29 @@ function getTrackConditionBonus(race, runner, pointBreakdownComment) {
     if (race.Meeting.TrackCondition.toLowerCase().includes("soft") && runner.stats.softPerformance.hasStarts) {
         hasStart = true;
         winPercentage = Number(runner.stats.softPerformance.wins) / Number(runner.stats.softPerformance.starts);
-        placePercentage = (Number(runner.stats.softPerformance.seconds) + Number(runner.stats.softPerformance.seconds) + Number(runner.stats.softPerformance.thirds)) / Number(runner.stats.softPerformance.starts);
+        placePercentage = (Number(runner.stats.softPerformance.wins) + Number(runner.stats.softPerformance.seconds) + Number(runner.stats.softPerformance.thirds)) / Number(runner.stats.softPerformance.starts);
     } else if (race.Meeting.TrackCondition.toLowerCase().includes("good") && runner.stats.goodNewPerformance.hasStarts) {
         hasStart = true;
         winPercentage = Number(runner.stats.goodNewPerformance.wins) / Number(runner.stats.goodNewPerformance.starts);
-        placePercentage = (Number(runner.stats.goodNewPerformance.seconds) + Number(runner.stats.goodNewPerformance.seconds) + Number(runner.stats.goodNewPerformance.thirds)) / Number(runner.stats.goodNewPerformance.starts);
+        placePercentage = (Number(runner.stats.goodNewPerformance.wins) + Number(runner.stats.goodNewPerformance.seconds) + Number(runner.stats.goodNewPerformance.thirds)) / Number(runner.stats.goodNewPerformance.starts);
     } else if (race.Meeting.TrackCondition.toLowerCase().includes("heavy") && runner.stats.heavyNewPerformance.hasStarts) {
         hasStart = true;
         winPercentage = Number(runner.stats.heavyNewPerformance.wins) / Number(runner.stats.heavyNewPerformance.starts);
-        placePercentage = (Number(runner.stats.heavyNewPerformance.seconds) + Number(runner.stats.heavyNewPerformance.seconds) + Number(runner.stats.heavyNewPerformance.thirds)) / Number(runner.stats.heavyNewPerformance.starts);
+        placePercentage = (Number(runner.stats.heavyNewPerformance.wins) + Number(runner.stats.heavyNewPerformance.seconds) + Number(runner.stats.heavyNewPerformance.thirds)) / Number(runner.stats.heavyNewPerformance.starts);
     } else if (race.Meeting.TrackCondition.toLowerCase().includes("synthetic") && runner.stats.syntheticPerformance.hasStarts) {
         hasStart = true;
         winPercentage = Number(runner.stats.syntheticPerformance.wins) / Number(runner.stats.syntheticPerformance.starts);
-        placePercentage = (Number(runner.stats.syntheticPerformance.seconds) + Number(runner.stats.syntheticPerformance.seconds) + Number(runner.stats.syntheticPerformance.thirds)) / Number(runner.stats.syntheticPerformance.starts);
+        placePercentage = (Number(runner.stats.syntheticPerformance.wins) + Number(runner.stats.syntheticPerformance.seconds) + Number(runner.stats.syntheticPerformance.thirds)) / Number(runner.stats.syntheticPerformance.starts);
     }
+
     if (hasStart) { // has run under this condition before
-        trackConditionBonus += 15; // +15 for having race on this track/distance
-        trackConditionBonus += Math.round(placePercentage * 35); // 35 points for 100% place
-        trackConditionBonus += Math.round(winPercentage * 50); // 50 points for 100% win
+        if ((placePercentage > 0)) {
+            trackConditionBonus += 15; // +15 for having race on this track/distance
+            trackConditionBonus += Math.round(placePercentage * 35); // 35 points for 100% place
+            trackConditionBonus += Math.round(winPercentage * 50); // 50 points for 100% win
+        } else {
+            trackConditionBonus -= 15;
+        }
     }
 
     pointBreakdownComment += "-Condition points " + trackConditionBonus + " <br/>";
@@ -571,10 +594,11 @@ function getFormBonus(race, runner, pointBreakdownComment, formCell) {
     var bigPrizeBonus = 0;
     var nearlyWin = 0;
     var winBonus = 0;
+    var outOfPlacing = 0;
     var bigWinBonus = 0;
     var sameRacePrevious = 0;
     var brokeMaiden = 0;
-
+    var lowOddCouldntWin = 0;
     var shouldCountSpecial = true;
     var specialFinish = 0;
     var specialFinishPoints = 0;
@@ -582,7 +606,7 @@ function getFormBonus(race, runner, pointBreakdownComment, formCell) {
 
     runner.PreviousForm.forEach(function (form, formIndex) {
 
-        if (form.Finish >= 4 && form.Finish <= 7) {
+        if (form.Finish >= 3 && form.Finish <= 7) {
             specialFinish++;
         } else {
             if (formIndex == 0 || formIndex == 1) { //streak wont count if the runner won recently
@@ -595,76 +619,49 @@ function getFormBonus(race, runner, pointBreakdownComment, formCell) {
         // Last start too far
         if (formIndex == 0 && daysToToday(form.Date) > 90) {
             lastStartBonus -= 10;
+            pointPool += 10;
         }
         // Number of horse bonus
         if (form.Finish == 1 && (form.NumberOfRunners == race.NumberOfRunners)) {
             numberOfHorseBonus += 15;
-            pointBreakdownComment += "-Similar number of horse, points " + Math.round(numberOfHorseBonus) + "</br>";
         } else if (form.Finish == 2 && (form.NumberOfRunners == race.NumberOfRunners)) {
             numberOfHorseBonus += 10;
-            pointBreakdownComment += "-Similar number of horse, points " + Math.round(numberOfHorseBonus) + "</br>";
         } else if (form.Finish == 3 && (form.NumberOfRunners == race.NumberOfRunners)) {
             numberOfHorseBonus += 5;
-            pointBreakdownComment += "-Similar number of horse, points " + Math.round(numberOfHorseBonus) + "</br>";
         }
+        pointPool += 15;
         // ignore data > 3 months
         // if (daysToToday(form.Date) <= 90) {
         if (form.Finish <= 3) {
             if (runner.Jockey.Name.toLowerCase() == form.Jockey.toLowerCase()) {
                 familiarJockeyBonus += 5;
             }
-
+            pointPool += 5;
             if (runner.Barrier == form.Barrier) {
-                familiarBarrierBonus += 3;
+                familiarBarrierBonus += 10;
             } else if (
                 runner.Barrier == form.Barrier + 1 ||
                 runner.Barrier == form.Barrier - 1
             ) {
-                familiarBarrierBonus += 2;
+                familiarBarrierBonus += 5;
             }
-
+            pointPool += 10;
             if (race.Distance == form.Distance) {
                 familiarDistanceBonus += 5;
 
             }
-
+            pointPool += 5;
             if (Number(form.StartingPrice) > 30 && Number(form.Margin) < 0.5) {
                 nearlyWinBonus += 5;
             }
-
-            // if (form.Finish == 2) {
-            //     if (form.Margin >= 15) { // this runner probably gave up, dont count
-
-            //     } else if (form.Margin >= 4) {
-            //         loseTooFarPenalty -= 10; // finished too far away
-            //         pointPool += 10;
-
-            //     } else if (form.Margin >= 2) {
-            //         loseTooFarPenalty -= 5; // finished too far away
-            //         pointPool += 5;
-            //     }
-            // }
-
-            // if (form.Finish == 3) {
-            //     if (form.Margin >= 15) { // this runner probably gave up, dont count
-
-            //     } else if (form.Margin >= 6) {
-            //         loseTooFarPenalty -= 10; // finished too far away
-            //         pointPool += 10; // loose too far 1
-
-            //     } else if (form.Margin >= 3) {
-            //         loseTooFarPenalty -= 5; // finished too far away
-            //         pointPool += 5; // loose too far 2
-            //     }
-            // }
-
+            pointPool += 5;
             if (form.Finish != 1 && form.Margin <= 0.3) {
                 nearlyWin = 10;
 
-            } else if (form.Finish != 1 && form.Margin <= 1) {
+            } else if (form.Finish != 1 && form.Margin <= 0.5) {
                 nearlyWin = 5;
             }
-
+            pointPool += 10;
             if (form.RacePrizeMoney > 5000000) {
                 bigPrizeBonus += 15;
                 pointPool += 15;
@@ -705,31 +702,65 @@ function getFormBonus(race, runner, pointBreakdownComment, formCell) {
         } else if (form.Finish == 3) {
             winBonus += 3;
         }
+        pointPool += 10;
+        // else {
+        //     // couldn't win
+        //     if (Number(form.Margin) >= 12) {
+        //         // Gave up dont count
+        //     }
+        //     else if (Number(form.Margin) > 5 && race.Distance == form.Distance) {
+        //         // ignore last runs with high starting price
+        //         outOfPlacing -= 10;
+        //         pointPool += 10;
+
+        //     } else if (Number(form.Margin) >= 2 && race.Distance == form.Distance) {
+        //         outOfPlacing -= 5;
+        //         pointPool += 5;
+
+        //     }
+        // }
 
         /* =========== Penalty ============ */
         // 1. very risky to win too closely 
+        
         if (form.Finish == 1) {
             if (Number(form.Margin) > 3.5 && formIndex == 0) {
                 bigWinBonus += 20;
                 pointPool += 20; // big win bonus
             } else if (Number(form.Margin) <= 0.1) {
+                winTooClosePenalty -= 10;
+                pointPool += 10;
+            } else if (Number(form.Margin) <= 0.2) {
                 winTooClosePenalty -= 5;
                 pointPool += 5;
-            } else if (Number(form.Margin) <= 0.2) {
-                winTooClosePenalty -= 2;
-                pointPool += 2;
             }
         }
-        // 2. just won the same race previously 
-        if (form.Finish == 1 && formIndex == 0 && form.Track == race.Meeting.Track && form.Distance == race.Distance) {
-            sameRacePrevious -= 5;
-            pointPool += 5; // same race previous close
-        }
+        if (formIndex == 0) {
 
-        // 4. Last start broke maiden
-        if (form.Finish == 1 && formIndex == 0 && form.RaceClass.toLowerCase().includes("mdn")) {
-            brokeMaiden -= 10;
-            pointPool += 10; // broke maiden previous
+            // 2. just won the same race previously 
+            if (form.Finish == 1 && form.Track == race.Meeting.Track && form.Distance == race.Distance) {
+                sameRacePrevious -= 10;
+                pointPool += 10; // same race previous close
+            }
+
+            // 4. Last start broke maiden
+            if (form.Finish == 1 && form.RaceClass.toLowerCase().includes("mdn")) {
+                brokeMaiden -= 10;
+                pointPool += 10; // broke maiden previous
+            }
+        }
+        // 5. Low odd but couldn't win
+        if (form.Finish != 1 && form.Distance == race.Distance) {
+            if (Number(form.StartingPrice) < 1.5 && form.Margin > 0.5) {
+                lowOddCouldntWin -= 20;
+                pointPool += 20;
+            } else if (Number(form.StartingPrice) < 2 >= 2) {
+                lowOddCouldntWin -= 15;
+                pointPool += 15;
+            } else if (Number(form.StartingPrice) < 3 >= 3) {
+                lowOddCouldntWin -= 10;
+                pointPool += 10;
+            }
         }
 
         if (form.Finish <= 3) {
@@ -855,22 +886,25 @@ function getFormBonus(race, runner, pointBreakdownComment, formCell) {
         }
 
         // }
-        pointPool += 10; // last start
-        pointPool += 5; // same jock
-        pointPool += 10; // same barrier
-        pointPool += 5; // same distance
-        pointPool += 5; // nearly win
-        pointPool += 10; // nearly win
-        pointPool += 15; // big prize
-        pointPool += 10; // win bonus
-        pointPool += 0; // big win bonus
-        pointPool += 0; // big too close
+        // pointPool += 10; // last start
+        // pointPool += 5; // same jock
+        // pointPool += 20; // same barrier
+        // pointPool += 5; // same distance
+        // pointPool += 5; // nearly win
+        // pointPool += 10; // nearly win
+        // pointPool += 15; // big prize
+        // pointPool += 10; // win bonus
+        // pointPool += 0; // big win bonus
+        // pointPool += 0; // big too close
     });
     if (shouldCountSpecial) {
-        if (specialFinish >= 3) {
-            specialFinishPoints = 10;
+        if (specialFinish >= 4) {
+            specialFinishPoints += 20;
+            pointPool += 20;
+        } else if (specialFinish >= 3) {
+            specialFinishPoints += 10;
+            pointPool += 10;
         }
-        pointPool += 10;
     }
 
     totalPoints = lastStartBonus +
@@ -886,6 +920,8 @@ function getFormBonus(race, runner, pointBreakdownComment, formCell) {
         bigWinBonus +
         sameRacePrevious +
         brokeMaiden +
+        lowOddCouldntWin +
+        outOfPlacing +
         specialFinish;
     // pointBreakdownComment += "-- SPECIAL POINTS --<br/>";
     if (lastStartBonus != 0) {
@@ -940,6 +976,14 @@ function getFormBonus(race, runner, pointBreakdownComment, formCell) {
         pointBreakdownComment += "-Just broke maiden, points " + Math.round(brokeMaiden / pointPool * 200) + "<br/>";
     }
 
+    if (lowOddCouldntWin != 0) {
+        pointBreakdownComment += "-Low odd but couldn't win, points " + Math.round(lowOddCouldntWin / pointPool * 200) + "<br/>";
+    }
+
+    if (outOfPlacing != 0) {
+        pointBreakdownComment += "-Out of placings, points " + Math.round(outOfPlacing / pointPool * 200) + "<br/>";
+    }
+
     if (specialFinishPoints != 0) {
         pointBreakdownComment += "-Special finish streak, points " + Math.round(specialFinishPoints / pointPool * 200) + "<br/>";
     }
@@ -948,10 +992,14 @@ function getFormBonus(race, runner, pointBreakdownComment, formCell) {
     if (pointPool != 0) {
         formBonus = Math.round(totalPoints / pointPool * 200);
     }
-
+    if(Number(runner.stats.winPercent) != 0){
+        formBonus = Math.round(formBonus * (runner.stats.winPercent) / 10);
+    } else {
+        formBonus = Math.round(formBonus * (runner.stats.placePercent) / 20);
+    }
+    
     if (numberOfHorseBonus != 0) {
         formBonus += Number(numberOfHorseBonus);
-        console.log("-Similar number of horse, points " + Math.round(numberOfHorseBonus));
     }
     pointBreakdownComment += "-Form bonus points " + formBonus + "<br/>";
     returnObject = {
@@ -1293,6 +1341,8 @@ function getJockeyPoints(jockey, state) {
                 case "Zac Lloyd".toLowerCase():
                     points = 9;
                     break;
+                case "Alex Patis".toLowerCase():
+                    points = 8;
                 case "Boris Thornton".toLowerCase():
                     points = 8;
                     break;
