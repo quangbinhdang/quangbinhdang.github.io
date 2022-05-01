@@ -246,6 +246,7 @@ function process_horse(table, race) {
 
             if (WITH_JOCK) {
                 var jockeyBonus = getJockeyPoints(runner.Jockey.Name, state);
+                jockeyBonus *= 3;
                 pointBreakdownComment += "-Jockey points " + jockeyBonus + " <br/>";
                 bonus =
                     speedBarrierBonus +
@@ -1022,6 +1023,18 @@ function getJockeyPoints(jockey, state) {
         "Jock = " + jockey.toLowerCase() + " | State = " + state.toLowerCase()
     );
     var points = 0;
+    if(jockeyList.jockeys === undefined){
+        return 0;
+    }
+    var reversedJockeys = jockeyList.jockeys;
+    reversedJockeys.forEach(function(jockeyName, point){
+        if(jockeyName.toLowerCase() == jockey.toLowerCase()){
+            points = reversedJockeys.length - point;
+        }
+    });
+    console.log("JOCK POINTS = " + points);
+    return Math.round(points / 2);
+
     switch (state.toLowerCase()) {
         case "nsw".toLowerCase():
             switch (jockey.toLowerCase()) {
@@ -1379,17 +1392,7 @@ function getJockeyPoints(jockey, state) {
             points = 0;
             break;
     }
-    // if(jockeyList.jockeys === undefined){
-    //     return 0;
-    // }
-    // var reversedJockeys = jockeyList.jockeys;
-    // reversedJockeys.forEach(function(jockeyName, point){
-    //     if(jockeyName.toLowerCase() == jockey.toLowerCase()){
-    //         points = 200 - point;
-    //     }
-    // });
-    // console.log("JOCK POINTS = " + points);
-    // return Math.round(points / 2);
+    
     return Math.round(points * 10);
 }
 
