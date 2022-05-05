@@ -415,13 +415,18 @@ function getTrackAndTrackDistanceBonus(race, runner, pointBreakdownComment) {
 
     if (runner.stats.trackPerformance.hasStarts) {
         if (runner.stats.trackPerformance.starts >= 2) {
-            if (trackPerformancePlacePercentage > 0 && trackPerformanceWinPercentage != 0) {
+            if (trackPerformancePlacePercentage > 0) {
                 trackBonus += 5; // +5 for having race on this track
                 trackBonus += Math.round(trackPerformancePlacePercentage * 10 / 100); // 10 points for 100% place
                 trackBonus += Math.round(trackPerformanceWinPercentage * 15 / 100); // 15 points for 100% win
-            } else { // never win before
-                trackBonus -= (15 + Math.round((100 - trackPerformancePlacePercentage) * 10 / 100));
-            }
+                if(trackPerformanceWinPercentage != 0){
+                    trackBonus += Math.round(trackPerformanceWinPercentage * 15 / 100);
+                } else { // never win before
+                    if(runner.stats.trackPerformance.starts >= 3){
+                        trackBonus -= (15 + Math.round((100 - trackPerformancePlacePercentage) * 10 / 100));
+                    }
+                }
+            } 
         }
     } else {
         trackBonus -= 15;
@@ -431,13 +436,17 @@ function getTrackAndTrackDistanceBonus(race, runner, pointBreakdownComment) {
 
     if (runner.stats.distancePerformance.hasStarts) {
         if (runner.stats.distancePerformance.starts >= 2) {
-            if (distancePerformancePlacePercentage > 0 && distancePerformanceWinPercentage != 0) {
+            if (distancePerformancePlacePercentage > 0) {
                 distanceBonus += 10; // +10 for having race on this distance
                 distanceBonus += Math.round(distancePerformancePlacePercentage * 20 / 100); // 20 points for 100% place
-                distanceBonus += Math.round(distancePerformanceWinPercentage * 40 / 100); // 30 points for 100% win
-            } else {
-                distanceBonus -= (30 + Math.round((100 - distancePerformancePlacePercentage) * 20 / 100));
-            }
+                if(distancePerformanceWinPercentage != 0){
+                    distanceBonus += Math.round(distancePerformanceWinPercentage * 40 / 100); // 30 points for 100% win
+                } else {
+                    if(runner.stats.distancePerformance.starts >= 3){
+                        distanceBonus -= (30 + Math.round((100 - distancePerformancePlacePercentage) * 20 / 100));
+                    }
+                }
+            } 
         }
     } else {
         distanceBonus -= 30;
@@ -447,14 +456,18 @@ function getTrackAndTrackDistanceBonus(race, runner, pointBreakdownComment) {
 
     if (runner.stats.trackAndDistancePerformance.hasStarts) {
         if (runner.stats.trackAndDistancePerformance.starts >= 2) {
-            if (trackDistancePlacePercentage > 0 && trackDistanceWinPercentage != 0) {
+            if (trackDistancePlacePercentage > 0) {
                 trackDistanceBonus += 15; // +15 for having race on this track/distance
                 trackDistanceBonus += Math.round(trackDistancePlacePercentage * 35 / 100); // 35 points for 100% place
-                trackDistanceBonus += Math.round(trackDistanceWinPercentage * 50 / 100); // 50 points for 100% win
-            } else {
-                trackDistanceBonus -= (50 + Math.round((100 - trackDistancePlacePercentage) * 50 / 100) );
-            }
-
+                
+                if(trackDistanceWinPercentage != 0){
+                    trackDistanceBonus += Math.round(trackDistanceWinPercentage * 50 / 100); // 50 points for 100% win
+                } else {
+                    if(runner.stats.trackAndDistancePerformance.starts >= 3){
+                        trackDistanceBonus -= (50 + Math.round((100 - trackDistancePlacePercentage) * 50 / 100) );
+                    }
+                }
+            } 
         }
     } else {
         trackDistanceBonus -= 50;
@@ -785,11 +798,20 @@ function getFormBonus(race, runner, pointBreakdownComment, formCell) {
             if (Number(form.StartingPrice) < 2 && form.Margin >= 0.3) {
                 lowOddCouldntWin -= 25;
                 pointPool -= lowOddCouldntWin;
-            } else if (Number(form.StartingPrice) < 3 && form.Margin >= 0.5 && form.Finish >= 3) {
-                lowOddCouldntWin -= Math.ceil(20 + (form.Margin-0.5));
+            } else if (Number(form.StartingPrice) < 2.5 && form.Margin >= 0.5 && form.Finish >= 3) {
+                lowOddCouldntWin -= Math.ceil(22 + (form.Margin-0.5));
                 pointPool -= lowOddCouldntWin;
-            } else if (Number(form.StartingPrice) <= 4 && form.Margin >= 1.5 && form.Finish >= 4) {
-                lowOddCouldntWin -= Math.ceil(15 + (form.Margin-1.5));
+            } else if (Number(form.StartingPrice) < 3 && form.Margin >= 1 && form.Finish >= 3) {
+                lowOddCouldntWin -= Math.ceil(20 + (form.Margin-1));
+                pointPool -= lowOddCouldntWin;
+            } else if (Number(form.StartingPrice) < 3.5 && form.Margin >= 1.5 && form.Finish >= 3) {
+                lowOddCouldntWin -= Math.ceil(28 + (form.Margin-1.5));
+                pointPool -= lowOddCouldntWin;
+            } else if (Number(form.StartingPrice) <= 4 && form.Margin >= 2 && form.Finish >= 4) {
+                lowOddCouldntWin -= Math.ceil(15 + (form.Margin-2));
+                pointPool -= lowOddCouldntWin;
+            } else if (Number(form.StartingPrice) < 4.5 && form.Margin >= 3 && form.Finish >= 3) {
+                lowOddCouldntWin -= Math.ceil(13 + (form.Margin-3));
                 pointPool -= lowOddCouldntWin;
             } else if (Number(form.StartingPrice) <= 5 && form.Margin >= 5 && form.Finish >= 5) {
                 lowOddCouldntWin -= Math.ceil(10 + (form.Margin - 5));
