@@ -659,12 +659,14 @@ function getFormBonus(race, runner, pointBreakdownComment, formCell) {
         // Number of horse bonus
         if (form.Finish == 1 && (form.NumberOfRunners == race.NumberOfRunners)) {
             numberOfHorseBonus += 15;
+            pointPool += 15;
         } else if (form.Finish == 2 && (form.NumberOfRunners == race.NumberOfRunners)) {
             numberOfHorseBonus += 10;
+            pointPool += 15;
         } else if (form.Finish == 3 && (form.NumberOfRunners == race.NumberOfRunners)) {
             numberOfHorseBonus += 5;
+            pointPool += 15;
         }
-        pointPool += 15;
         // ignore data > 3 months
         // if (daysToToday(form.Date) <= 90) {
         if (form.Finish <= 3) {
@@ -1078,6 +1080,8 @@ function getFormBonus(race, runner, pointBreakdownComment, formCell) {
     }
     // pointBreakdownComment += "------- END SPECIAL POINTS -------<br/>";
     // prize pool = 100 points
+    // console.log("RUNNER = "+ runner.Name + " || totalPoints = " + totalPoints + " || pointPool = " + pointPool);
+
     if (pointPool != 0) {
         formBonus = Math.round(totalPoints / pointPool * 200);
     }
