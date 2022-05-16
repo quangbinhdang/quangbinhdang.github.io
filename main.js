@@ -255,7 +255,7 @@ async function process_horse(table, race, condition) {
 
             if (WITH_JOCK) {
                 var jockeyBonus = getJockeyPoints(runner.Jockey.Name);
-                jockeyBonus *= 3;
+                jockeyBonus = Math.round(jockeyBonus / 3);
                 pointBreakdownComment += "-Jockey points " + jockeyBonus + " <br/>";
                 bonus =
                     speedBarrierBonus +
@@ -422,8 +422,8 @@ function getTrackAndTrackDistanceBonus(race, runner, pointBreakdownComment) {
     }
 
 
-    var winPercentage = runner.stats.winPercent;
-    var placePercentage = runner.stats.placePercent;
+    // var winPercentage = runner.stats.winPercent;
+    // var placePercentage = runner.stats.placePercent;
 
     var trackBonus = 0;
     var distanceBonus = 0;
@@ -433,8 +433,14 @@ function getTrackAndTrackDistanceBonus(race, runner, pointBreakdownComment) {
         if (runner.stats.trackPerformance.starts >= 2) {
             if (trackPerformancePlacePercentage > 0) {
                 trackBonus += 2; // +5 for having race on this track
-                trackBonus += Math.round(trackPerformancePlacePercentage * 5 / 100 + (trackPerformancePlacePercentage * runner.stats.trackPerformance.starts  /100)); // 10 points for 100% place
+                
                 // trackBonus += Math.round(trackPerformanceWinPercentage * 7 / 100); // 15 points for 100% win
+                if(trackPerformancePlacePercentage >= 34) {
+                    trackBonus += Math.round(trackPerformancePlacePercentage * 5 / 100 + (trackPerformancePlacePercentage * runner.stats.trackPerformance.starts  /100)); // 10 points for 100% place
+                } else {
+                    trackBonus -= (Math.round(trackPerformancePlacePercentage * 5 / 100 + ((100 -trackPerformancePlacePercentage) * runner.stats.trackPerformance.starts  /100))); // 10 points for 100% place
+                }
+
                 if(trackPerformanceWinPercentage != 0){
                     trackBonus += Math.round(trackPerformanceWinPercentage * 7 / 100 + ( trackPerformanceWinPercentage * runner.stats.trackPerformance.starts /100));
                 } else { // never win before
@@ -454,9 +460,14 @@ function getTrackAndTrackDistanceBonus(race, runner, pointBreakdownComment) {
         if (runner.stats.distancePerformance.starts >= 2) {
             if (distancePerformancePlacePercentage > 0) {
                 distanceBonus += 5; // +10 for having race on this distance
-                distanceBonus += Math.round(distancePerformancePlacePercentage * 10 / 100 + (distancePerformancePlacePercentage * runner.stats.distancePerformance.starts /100)); // 20 points for 100% place
+                if(distancePerformancePlacePercentage >= 34){
+                    distanceBonus += Math.round(distancePerformancePlacePercentage * 10 / 100 + (distancePerformancePlacePercentage * runner.stats.distancePerformance.starts /100)); // 20 points for 100% place
+                } else {
+                    distanceBonus -= (Math.round(distancePerformancePlacePercentage * 10 / 100 + ((100 - distancePerformancePlacePercentage) * runner.stats.distancePerformance.starts /100))); // 20 points for 100% place
+                }
+                
                 if(distancePerformanceWinPercentage != 0){
-                    distanceBonus += Math.round(distancePerformanceWinPercentage * 15 / 100 + (distancePerformanceWinPercentage * runner.stats.distancePerformance.starts /100)); // 30 points for 100% win
+                    distanceBonus += Math.round(distancePerformanceWinPercentage * 15 / 100 + (distancePerformanceWinPercentage) * runner.stats.distancePerformance.starts /100); // 30 points for 100% win
                 } else {
                     if(runner.stats.distancePerformance.starts >= 3){
                         distanceBonus -= (5 + Math.round((100 - distancePerformancePlacePercentage) * 5 / 100* runner.stats.distancePerformance.starts));
@@ -473,14 +484,18 @@ function getTrackAndTrackDistanceBonus(race, runner, pointBreakdownComment) {
     if (runner.stats.trackAndDistancePerformance.hasStarts) {
         if (runner.stats.trackAndDistancePerformance.starts >= 2) {
             if (trackDistancePlacePercentage > 0) {
-                trackDistanceBonus += 10; // +15 for having race on this track/distance
-                trackDistanceBonus += Math.round(trackDistancePlacePercentage * 20 / 100 + (trackDistancePlacePercentage * runner.stats.trackAndDistancePerformance.starts / 100)); // 35 points for 100% place
+                trackDistanceBonus += 10; // +15 for having race on this track/distancev
+                if(trackDistancePlacePercentage >= 34) {
+                    trackDistanceBonus += Math.round(trackDistancePlacePercentage * 15 / 100 + (trackDistancePlacePercentage * runner.stats.trackAndDistancePerformance.starts / 100)); // 35 points for 100% place
+                } else {
+                    trackDistanceBonus -= (Math.round(trackDistancePlacePercentage * 15 / 100 + ((100 - trackDistancePlacePercentage) * runner.stats.trackAndDistancePerformance.starts / 100))); // 35 points for 100% place
+                }
                 
                 if(trackDistanceWinPercentage != 0){
-                    trackDistanceBonus += Math.round(trackDistanceWinPercentage * 30 / 100 + (trackDistanceWinPercentage * runner.stats.trackAndDistancePerformance.starts /100)); // 50 points for 100% win
+                    trackDistanceBonus += Math.round(trackDistanceWinPercentage * 20 / 100 + (trackDistanceWinPercentage * runner.stats.trackAndDistancePerformance.starts /100)); // 50 points for 100% win
                 } else {
                     if(runner.stats.trackAndDistancePerformance.starts >= 3){
-                        trackDistanceBonus -= (5 + Math.round((100 - trackDistancePlacePercentage) * 5 / 100 * runner.stats.trackAndDistancePerformance.starts) );
+                        trackDistanceBonus -= (10 + Math.round((100 - trackDistancePlacePercentage) * 10 / 100 * runner.stats.trackAndDistancePerformance.starts) );
                     }
                 }
             } 
@@ -501,19 +516,19 @@ function getBarrierBonus(race, runner, pointBreakdownComment) {
 
     if(race.Distance <= 1200){
         if (runner.Barrier >= 1 && runner.Barrier <= 5) {
-            barrierBonus += 35;
+            barrierBonus += 10;
             pointBreakdownComment +=
                 "-Barrier points " + barrierBonus + " <br/>";
         } else if (runner.Barrier >= 5 && runner.Barrier <= 8) {
-            barrierBonus += 15;
+            barrierBonus += 5;
             pointBreakdownComment +=
                 "-Barrier points " + barrierBonus + " <br/>";
         } else if (runner.Barrier > 20) {
-            barrierBonus -= 35;
+            barrierBonus -= 10;
             pointBreakdownComment +=
                 "-Barrier points " + barrierBonus + " <br/>";
         } else if (runner.Barrier > 15) {
-            barrierBonus -= 15;
+            barrierBonus -= 5;
             pointBreakdownComment +=
                 "-Barrier points " + barrierBonus + " <br/>";
         }
@@ -537,9 +552,21 @@ function getWeightBonus(race, runner, highestWeight, lowestWeight, pointBreakdow
     //     weightBonus += ((55 - Number(runner.Weight.Total)) * 40);
     //     pointBreakdownComment += "-Weight points " + weightBonus + " <br/>";
     // }
+    var scaling = 10;
+    if(race.Distance <= 1000){
+        scaling = 50;
+    } else if (race.Distance <= 1500){
+        scaling = 40;
+    } else if (race.Distance <= 2000){
+        scaling = 30;
+    } else if (race.Distance <= 2500){
+        scaling = 20;
+    } else {
+        scaling = 10;
+    }
     var weightDifference = highestWeight - lowestWeight;
     if (runner.Weight.Total != highestWeight && weightDifference != 0) {
-        weightBonus = Math.round(Number((highestWeight - runner.Weight.Total) / weightDifference) * 50);
+        weightBonus = Math.round(Number((highestWeight - runner.Weight.Total) / weightDifference) * scaling);
     }
     pointBreakdownComment += "-Weight points " + weightBonus + " <br/>";
     var result = { "points": weightBonus, "pointBreakdownComment": pointBreakdownComment };
@@ -598,19 +625,24 @@ function getTrackConditionBonus(race, runner, pointBreakdownComment, condition) 
     if (hasStart) {
         if (numberOfStarts >= 2) {
             if (placePercentage > 0) {
-                trackConditionBonus += 15; // +15 for having race on this track/distance
-                trackConditionBonus += Math.round(placePercentage * 35 ); // 35 points for 100% place
+                trackConditionBonus += 5; // +15 for having race on this track/distance
+                if(placePercentage >= 34){
+
+                    trackConditionBonus += Math.round(placePercentage * 5 ); // 35 points for 100% place
+                } else {
+                    trackConditionBonus -= Math.round((1 - placePercentage) * 5 ); // 35 points for 100% place
+                }
                 if(winPercentage != 0){
-                    trackConditionBonus += Math.round(winPercentage * 50 ); // 50 points for 100% win
+                    trackConditionBonus += Math.round(winPercentage * 10 ); // 50 points for 100% win
                 } else {
                     if(numberOfStarts >= 3){
-                        trackConditionBonus -= (15 + Math.round((100 - trackConditionBonus) * 15 ) );
+                        trackConditionBonus -= (5 + Math.round((100 - trackConditionBonus) * 5 ) );
                     }
                 }
             } 
         }
     } else {
-        trackConditionBonus -= 15;
+        trackConditionBonus -= 5;
     }
 
     // if (hasStart) { // has run under this condition before
@@ -682,71 +714,52 @@ function getFormBonus(race, runner, pointBreakdownComment, formCell) {
     var wonLastRace = false;
     // This is to include outOfPlacings for old records
     var isLastStartFarAway = false;
-
-    runner.PreviousForm.forEach(function (form, formIndex) {
-
-        if (form.Finish >= 4 && form.Finish <= (form.NumberOfRunners - 1) ) {
-            specialFinish++;
-        } else {
-            if (formIndex == 0 || formIndex == 1) { //streak wont count if the runner won recently
-                shouldCountSpecial = false;
+    if(runner.PreviousForm.length > 2){
+        runner.PreviousForm.forEach(function (form, formIndex) {
+            var considerStreak = false;
+            if(form.Finish >= 3 && (form.Finish < (form.NumberOfRunners - 1) && form.Finish <= 8)){   
+                considerStreak = true
             }
-            if (specialFinish < 3) {
-                specialFinish = 0;
+            if (considerStreak && form.Margin <= 9) {
+                specialFinish++;
+            } else {
+                if (formIndex == 0 || formIndex == 1) { //streak wont count if the runner won recently
+                    shouldCountSpecial = false;
+                }
+                if (specialFinish < 3) {
+                    specialFinish = 0;
+                }
             }
-        }
-        // Last start too far
-        if (formIndex == 0 && daysToToday(form.Date) >= 150) {
-            lastStartBonus -= 10;
-            pointPool += 10;
-            isLastStartFarAway = true;
-            limitBadForm = 300
-        }
-
-        if(isLastStartFarAway && form.Finish >= 4 && daysToToday(form.Date) < limitBadForm){
-            badFormSince100dSpellCount++;
-        }
-
-        if(isLastStartFarAway && form.Finish <= 3 && daysToToday(form.Date) < limitBadForm && badFormSince100dSpellCount < 3){
-            badFormSince100dSpellCount = 0; // reset bad form
-        }
-
-        // Number of horse bonus
-        if (form.Finish == 1 && (form.NumberOfRunners == race.NumberOfRunners)) {
-            numberOfHorseBonus += 15;
-            pointPool += 15;
-        } else if (form.Finish == 2 && (form.NumberOfRunners == race.NumberOfRunners)) {
-            numberOfHorseBonus += 10;
-            pointPool += 15;
-        } else if (form.Finish == 3 && (form.NumberOfRunners == race.NumberOfRunners)) {
-            numberOfHorseBonus += 5;
-            pointPool += 15;
-        }
-        // ignore data > 3 months
-        // if (daysToToday(form.Date) <= 90) {
-        if (form.Finish <= 3) {
-            // if(form.Finish == 1){
-            //     famousJockeyRide += Math.round(getJockeyPoints(form.Jockey)/20 * 3);
-            //     pointPool += famousJockeyRide;
-            // }
-            if (runner.Jockey.Name.toLowerCase() == form.Jockey.toLowerCase() && (form.Finish == 1 || form.Finish == 2) && Math.abs(form.Distance - race.Distance) <= 50) {
-                familiarJockeyBonus += 15;
+            // Last start too far
+            if (formIndex == 0 && daysToToday(form.Date) >= 150) {
+                lastStartBonus -= 10;
+                pointPool += 10;
+                isLastStartFarAway = true;
+                limitBadForm = 300
             }
-            pointPool += 15;
-            if (runner.Barrier == form.Barrier) {
-                familiarBarrierBonus += 10;
-            } else if (
-                runner.Barrier == form.Barrier + 1 ||
-                runner.Barrier == form.Barrier - 1
-            ) {
-                familiarBarrierBonus += 5;
+    
+            if(isLastStartFarAway && form.Finish >= 4 && daysToToday(form.Date) < limitBadForm){
+                badFormSince100dSpellCount++;
             }
-            pointPool += 10;
-            if (race.Distance == form.Distance) {
-                familiarDistanceBonus += 5;
-
+    
+            if(isLastStartFarAway && form.Finish <= 3 && daysToToday(form.Date) < limitBadForm && badFormSince100dSpellCount < 3){
+                badFormSince100dSpellCount = 0; // reset bad form
             }
-            pointPool += 5;
+    
+            // Number of horse bonus
+            if (form.Finish == 1 && (form.NumberOfRunners == race.NumberOfRunners)) {
+                numberOfHorseBonus += 15;
+                pointPool += 15;
+            } else if (form.Finish == 2 && (form.NumberOfRunners == race.NumberOfRunners)) {
+                numberOfHorseBonus += 10;
+                pointPool += 15;
+            } else if (form.Finish == 3 && (form.NumberOfRunners == race.NumberOfRunners)) {
+                numberOfHorseBonus += 5;
+                pointPool += 15;
+            }
+            // ignore data > 3 months
+            // if (daysToToday(form.Date) <= 90) {
+    
             if (form.Finish != 1 && Number(form.StartingPrice) > 30 && (formIndex == 1 || formIndex == 2) ) {
                 if(Number(form.Margin) < 1.5) {
                     nearlyWinBonus += 10;
@@ -757,441 +770,471 @@ function getFormBonus(race, runner, pointBreakdownComment, formCell) {
                 }
                 
             }
-            if (form.Finish != 1 && form.Margin <= 0.3) {
-                nearlyWin = 10;
-
-            } else if (form.Finish != 1 && form.Margin <= 0.5) {
-                nearlyWin = 5;
-            }
-            pointPool += 10;
-            if (form.RacePrizeMoney > 5000000) {
-                bigPrizeBonus += 15;
-                pointPool += 15;
-            } else if (form.RacePrizeMoney > 3000000) {
-                bigPrizeBonus += 13;
-                pointPool += 13;
-            } else if (form.RacePrizeMoney > 1000000) {
-                bigPrizeBonus += 10;
-                pointPool += 10;
-            } else if (form.RacePrizeMoney > 800000) {
-                bigPrizeBonus += 9;
-                pointPool += 9;
-            } else if (form.RacePrizeMoney > 500000) {
-                bigPrizeBonus += 7;
-                pointPool += 7;
-            } else if (form.RacePrizeMoney > 200000) {
-                bigPrizeBonus += 5;
-                pointPool += 5;
-            } else if (form.RacePrizeMoney > 100000) {
-                bigPrizeBonus += 4;
-                pointPool += 4;
-            } else if (form.RacePrizeMoney > 70000) {
-                bigPrizeBonus += 3;
-                pointPool += 3;
-            } else if (form.RacePrizeMoney > 50000) {
-                bigPrizeBonus += 2;
-                pointPool += 2;
-            } else if (form.RacePrizeMoney > 20000) {
-                bigPrizeBonus += 1;
-                pointPool += 1;
-            }
-        }
-
-        if (form.Finish == 1) {
-            winBonus += 3;
-            pointPool += 10;
-        } else if (form.Finish == 2) {
-            winBonus += 10;
-            pointPool += 10;
-        } else if (form.Finish == 3) {
-            winBonus += 5;
-            pointPool += 10;
-        }
-        else {
-            if (daysToToday(form.Date) <= 180 || isLastStartFarAway) {
-                // couldn't win
-                if (Number(form.Margin) >= 20) {
-                    // Gave up dont count
+            if (form.Finish != 1 && form.Finish <= 4) {
+                if(form.Margin <= 0.3){
+                    nearlyWin = 20;
+                } else if (form.Margin <= 0.5 && form.StartingPrice >= 3){
+                    nearlyWin = 15;
+                } else if (form.Margin <= 1.5 && form.StartingPrice >= 7){
+                    nearlyWin = 10;
                 }
-                else if (Number(form.Margin) > 5 && form.StartingPrice < 30 && Math.abs(form.Distance - race.Distance) <= 100) {
-                    // ignore last runs with high starting price
-                    outOfPlacing -= 10;
+    
+            } 
+            pointPool += 10;
+    
+            if (form.Finish <= 3) {
+                // if(form.Finish == 1){
+                //     famousJockeyRide += Math.round(getJockeyPoints(form.Jockey)/20 * 3);
+                //     pointPool += famousJockeyRide;
+                // }
+                if (runner.Jockey.Name.toLowerCase() == form.Jockey.toLowerCase() && (form.Finish == 1 || form.Finish == 2) && Math.abs(form.Distance - race.Distance) <= 50) {
+                    familiarJockeyBonus += 5;
+                }
+                pointPool += 15;
+                if (runner.Barrier == form.Barrier) {
+                    familiarBarrierBonus += 5;
+                } else if (
+                    runner.Barrier == form.Barrier + 1 ||
+                    runner.Barrier == form.Barrier - 1
+                ) {
+                    familiarBarrierBonus += 2;
+                }
+                pointPool += 10;
+                if (race.Distance == form.Distance) {
+                    familiarDistanceBonus += 5;
+                }
+                pointPool += 5;
+                
+                if (form.RacePrizeMoney > 5000000) {
+                    bigPrizeBonus += 15;
+                    pointPool += 15;
+                } else if (form.RacePrizeMoney > 3000000) {
+                    bigPrizeBonus += 13;
+                    pointPool += 13;
+                } else if (form.RacePrizeMoney > 1000000) {
+                    bigPrizeBonus += 10;
                     pointPool += 10;
-
-                } else if (Number(form.Margin) >= 3 && form.StartingPrice < 10 && Math.abs(form.Distance - race.Distance) <= 100) {
-                    outOfPlacing -= 5;
+                } else if (form.RacePrizeMoney > 800000) {
+                    bigPrizeBonus += 9;
+                    pointPool += 9;
+                } else if (form.RacePrizeMoney > 500000) {
+                    bigPrizeBonus += 7;
+                    pointPool += 7;
+                } else if (form.RacePrizeMoney > 200000) {
+                    bigPrizeBonus += 5;
+                    pointPool += 5;
+                } else if (form.RacePrizeMoney > 100000) {
+                    bigPrizeBonus += 4;
+                    pointPool += 4;
+                } else if (form.RacePrizeMoney > 70000) {
+                    bigPrizeBonus += 3;
+                    pointPool += 3;
+                } else if (form.RacePrizeMoney > 50000) {
+                    bigPrizeBonus += 2;
+                    pointPool += 2;
+                } else if (form.RacePrizeMoney > 20000) {
+                    bigPrizeBonus += 1;
+                    pointPool += 1;
+                }
+            }
+    
+            if (form.Finish == 1) {
+                winBonus += 3;
+                pointPool += 10;
+            } else if (form.Finish == 2) {
+                winBonus += 10;
+                pointPool += 10;
+            } else if (form.Finish == 3) {
+                winBonus += 5;
+                pointPool += 10;
+            }
+            else {
+                if (daysToToday(form.Date) <= 180 || isLastStartFarAway) {
+                    // couldn't win
+                    if (Number(form.Margin) >= 20) {
+                        // Gave up dont count
+                    }
+                    else if (Number(form.Margin) > 3 && form.StartingPrice < 30 && Math.abs(form.Distance - race.Distance) <= 500) {
+                        // ignore last runs with high starting price
+                        outOfPlacing -= 10;
+                        pointPool += 10;
+    
+                    } else if (Number(form.Margin) >= 2 && form.StartingPrice < 10 && Math.abs(form.Distance - race.Distance) <= 500) {
+                        outOfPlacing -= 5;
+                        pointPool += 5;
+                    }
+                }
+            }
+    
+            /* =========== Penalty ============ */
+            // 1. very risky to win too closely 
+    
+            if (form.Finish == 1) {
+                if (Number(form.Margin) > 3.5 && formIndex == 0) {
+                    bigWinBonus += 20;
+                    pointPool += 20; // big win bonus
+                } 
+                
+                if (Number(form.Margin) <= 0.1 && form.StartingPrice <= 2) {
+                    winTooClosePenalty -= 10;
+                    pointPool += 15;
+                } else if (Number(form.Margin) <= 0.2 && form.StartingPrice <= 4) {
+                    winTooClosePenalty -= 10;
                     pointPool += 5;
                 }
             }
-        }
-
-        /* =========== Penalty ============ */
-        // 1. very risky to win too closely 
-
-        if (form.Finish == 1) {
-            if (Number(form.Margin) > 3.5 && formIndex == 0) {
-                bigWinBonus += 20;
-                pointPool += 20; // big win bonus
-            } 
-            
-            if (Number(form.Margin) <= 0.1 && form.StartingPrice <= 2) {
-                winTooClosePenalty -= 10;
-                pointPool += 15;
-            } else if (Number(form.Margin) <= 0.2 && form.StartingPrice <= 4) {
-                winTooClosePenalty -= 10;
-                pointPool += 5;
-            }
-        }
-        if (formIndex == 0) {
-
-            // 2. just won the same race previously 
-            if (form.Finish == 1 && form.Track == race.Meeting.Track && form.Distance == race.Distance) {
-                sameRacePrevious -= 50;
-                pointPool += 10; // same race previous
-                wonLastRace = true;
-            } else if (form.Finish == 1){ // just win last race
-                sameRacePrevious -= 15;
-                wonLastRace = true;
-            }
-
-            // 4. Last start broke maiden
-            if (form.Finish == 1 && form.RaceClass.toLowerCase().includes("mdn")) {
-                brokeMaiden -= 10;
-                wonLastRace = true;
-                pointPool += 10; // broke maiden previous
-            }
-        }
-        // 5. Low odd but couldn't win
-        if (form.Finish != 1 && (Math.abs(form.Distance - race.Distance) <= 150)) {
-            if (Number(form.StartingPrice) < 2 && form.Margin >= 0.3) {
-                lowOddCouldntWin -= 25;
-                pointPool -= lowOddCouldntWin;
-            } else if (Number(form.StartingPrice) < 2.5 && form.Margin >= 0.5 && form.Finish >= 3) {
-                lowOddCouldntWin -= Math.ceil(22 + (form.Margin-0.5));
-                pointPool -= lowOddCouldntWin;
-            } else if (Number(form.StartingPrice) < 3 && form.Margin >= 1 && form.Finish >= 3) {
-                lowOddCouldntWin -= Math.ceil(20 + (form.Margin-1));
-                pointPool -= lowOddCouldntWin;
-            } else if (Number(form.StartingPrice) < 3.5 && form.Margin >= 1.5 && form.Finish >= 3) {
-                lowOddCouldntWin -= Math.ceil(28 + (form.Margin-1.5));
-                pointPool -= lowOddCouldntWin;
-            } else if (Number(form.StartingPrice) <= 4 && form.Margin >= 2 && form.Finish >= 4) {
-                lowOddCouldntWin -= Math.ceil(15 + (form.Margin-2));
-                pointPool -= lowOddCouldntWin;
-            } else if (Number(form.StartingPrice) < 4.5 && form.Margin >= 3 && form.Finish >= 3) {
-                lowOddCouldntWin -= Math.ceil(13 + (form.Margin-3));
-                pointPool -= lowOddCouldntWin;
-            } else if (Number(form.StartingPrice) <= 5 && form.Margin >= 5 && form.Finish >= 5) {
-                lowOddCouldntWin -= Math.ceil(10 + (form.Margin - 5));
-                pointPool -= lowOddCouldntWin;
-            }
-        }
-
-        if (form.Finish <= 3) {
-            var finish = form.Finish;
-            var margin = form.Margin;
-            var timeRan = 0;
-            var timeArray = [];
-            var expectedWinTime = "N/A";
-
-            if (form.TimeRan != "N/A") {
-                var minute = 0;
-                var secondArray = [];
-                timeRan = form.TimeRan;
-                timeArray = timeRan.split(":");
-                if (timeArray.length != 1) {
-                    minute = timeArray[0];
-                    secondArray = timeArray[1].split(".");
-                } else {
-                    secondArray = timeArray[0].split(".");
-                }
-
-                var second = secondArray[0];
-                var mili = secondArray[1];
-
-                var miliToWin = Number(mili);
-                // Margin Bonus to time, 0.1L = 3ms
-                if (finish != 1) {
-                    miliToWin += Number(form.Margin) * 10 * 3;
-                }
-
-                logger("000 miliToWin == " + miliToWin);
-                //Barrier Bonus to time, 1 Barrier = 33ms
-                var barrierDiffirence = Number(runner.Barrier) - Number(form.Barrier);
-                miliToWin += Number(barrierDiffirence * 33);
-                logger("1111 miliToWin == " + miliToWin);
-                // Weight Bonus to time, 1kg = 50ms
-                logger("2222 miliToWin == " + miliToWin);
-                var weightDifference =
-                    Number(runner.Weight.Total) -
-                    (Number(form.BodyWeight) + Number(form.WeightCarried));
-                logger(
-                    "form.BodyWeight = " +
-                    form.BodyWeight +
-                    "form.WeightCarried = " +
-                    form.WeightCarried +
-                    "| weight = " +
-                    runner.Weight.Total +
-                    " | weightDifference = " +
-                    weightDifference +
-                    " | ADDED = " +
-                    Number(weightDifference * 50)
-                );
-
-                miliToWin += Number(weightDifference * 50);
-                logger("3333 miliToWin == " + miliToWin);
-
-                // Track Condition
-                if (race.Distance == 1400) {
-                    if (
-                        form.TrackCondition.toLowerCase() == "g" &&
-                        race.Meeting.TrackCondition.charAt(0).toLowerCase() == "h"
-                    ) {
-                        miliToWin += 400;
-                    } else if (
-                        form.TrackCondition.toLowerCase() == "h" &&
-                        race.Meeting.TrackCondition.charAt(0).toLowerCase() == "g"
-                    ) {
-                        miliToWin -= 400;
-                    }
-                }
-
-                var secondToWin = Math.floor(miliToWin / 100);
-
-                if (miliToWin < 0) {
-                    miliToWin = 100 + (miliToWin % 100);
-                }
-
-                var remainingMiliToWin = miliToWin % 100;
-                second = Number(second) + Number(secondToWin);
-                mili = Number(remainingMiliToWin);
-                if (second > 60) {
-                    minute = Number(minute) + Math.floor(second / 60);
-                }
-                second = second % 60;
-
-                expectedWinTime = minute + ":" + second + "." + mili;
-                logger(
-                    "minute = " +
-                    timeArray[0] +
-                    " second = " +
-                    second +
-                    " mili = " +
-                    remainingMiliToWin
-                );
-            }
-            var formInfo = "";
-            formInfo += "-Days since: <b>" + daysToToday(form.Date) + "</b>";
-            if (form.Distance == race.Distance) {
-                formInfo += "<br/>-<b>Distance: " + form.Distance + "</b>";
-            } else {
-                formInfo += "<br/>-Distance: " + form.Distance;
-            }
-
-            if (form.TrackCondition == race.Meeting.TrackCondition.charAt(0)) {
-                formInfo += "<br/>-<b>Condition: " + form.TrackCondition + "</b>";
-            } else {
-                formInfo += "<br/>-Condition: " + form.TrackCondition;
-            }
-            
-            if (form.Barrier == runner.Barrier) {
-                formInfo += "<br/>-<b>Barrier: " + form.Barrier + "</b>";
-            } else {
-                formInfo += "<br/>-Barrier: " + form.Barrier;
-            }
-            formInfo +=
-                "</br>-In run: " +
-                form.InRun +
-                "<br/>-Finish: " +
-                finish +
-                "/" +
-                form.NumberOfRunners +
-                "<br/>-Time: " +
-                timeRan +
-                
-                "</br>-Expected Time: " +
-                expectedWinTime +
-                "<br/>-Margin: " +
-                margin +
-                "<br/>----------------<br/>";
-            formCell.innerHTML += formInfo;
-        }
-
-        // }
-        // pointPool += 10; // last start
-        // pointPool += 5; // same jock
-        // pointPool += 20; // same barrier
-        // pointPool += 5; // same distance
-        // pointPool += 5; // nearly win
-        // pointPool += 10; // nearly win
-        // pointPool += 15; // big prize
-        // pointPool += 10; // win bonus
-        // pointPool += 0; // big win bonus
-        // pointPool += 0; // big too close
-    });
-
-    if(badFormSince100dSpellCount >= 3){
-        badFormSince100dSpellPoints -= 20;
-        pointPool += 20;
-    }
-
-    if (shouldCountSpecial) {
-        if (specialFinish >= 4) {
-            specialFinishPoints += 20;
-            pointPool += 20;
-        } else if (specialFinish >= 3) {
-            specialFinishPoints += 10;
-            pointPool += 10;
-        }
-        // if in special streak, ignore out of placing, ignore bad form
-        if(outOfPlacing !=  0){
-            pointPool += outOfPlacing; // return point pool
-            outOfPlacing = 0;
-        }
-
-        if(badFormSince100dSpellPoints !=  0){
-            pointPool += badFormSince100dSpellPoints; // return point pool
-            badFormSince100dSpellPoints = 0;
-        }
-    }
-
-    // reset low odd couldn't win if won last start
-    if(wonLastRace){ 
-        lowOddCouldntWin = 0;
-    }
-
+            if (formIndex == 0) {
     
-
-    totalPoints = lastStartBonus +
-        familiarJockeyBonus +
-        familiarBarrierBonus +
-        familiarDistanceBonus +
-        nearlyWinBonus +
-        winTooClosePenalty +
-        loseTooFarPenalty +
-        bigPrizeBonus +
-        nearlyWin +
-        winBonus +
-        bigWinBonus +
-        sameRacePrevious +
-        brokeMaiden +
-        lowOddCouldntWin +
-        outOfPlacing +
-        specialFinishPoints +
-        badFormSince100dSpellPoints;
-    // console.log("RUNNER: " + runner.Name +" || TOTAL: lastStartBonus = "+ lastStartBonus + 
-    // " || familiarJockeyBonus = " +familiarJockeyBonus+ 
-    // " || familiarBarrierBonus = " +familiarBarrierBonus+
-    // " || familiarDistanceBonus = " +familiarDistanceBonus+
-    // " || nearlyWinBonus = " +nearlyWinBonus+
-    // " || winTooClosePenalty = " +winTooClosePenalty+
-    // " || loseTooFarPenalty = " +loseTooFarPenalty+
-    // " || bigPrizeBonus = " +bigPrizeBonus+
-    // " || nearlyWin = " +nearlyWin+
-    // " || winBonus = " +winBonus+
-    // " || bigWinBonus = " +bigWinBonus+
-    // " || sameRacePrevious = " +sameRacePrevious+
-    // " || brokeMaiden = " +brokeMaiden+
-    // " || lowOddCouldntWin = " +lowOddCouldntWin+
-    // " || outOfPlacing = " +outOfPlacing+
-    // " || specialFinishPoints = " +specialFinishPoints+
-    // " || badFormSince100dSpellPoints = " +badFormSince100dSpellPoints+
-    // " || Total Points = " +totalPoints);
-    // pointBreakdownComment += "-- SPECIAL POINTS --<br/>";
-    if (lastStartBonus != 0) {
-        // pointBreakdownComment += "-Last start is too far, " + Math.round(lastStartBonus / pointPool * 200) + "<br/>";
-        pointBreakdownComment += "-Last start is too far, " + Math.round(lastStartBonus) + "<br/>";
-    }
-
-    if (familiarJockeyBonus != 0) {
-        pointBreakdownComment += "-Same jockey points " + Math.round(familiarJockeyBonus) + "<br/>";
-    }
-
-    if (familiarBarrierBonus != 0) {
-        pointBreakdownComment += "-Same barrier points " + Math.round(familiarBarrierBonus) + "<br/>";
-    }
-
-    if (familiarDistanceBonus != 0) {
-        pointBreakdownComment += "-Same distance points " + Math.round(familiarDistanceBonus) + "<br/>";
-    }
-
-    if (nearlyWinBonus != 0) {
-        pointBreakdownComment += "-Nearly Win with big odd points " + Math.round(nearlyWinBonus) + "<br/>";
-    }
-
-    if (winTooClosePenalty != 0) {
-        pointBreakdownComment += "-Won too close, points " + Math.round(winTooClosePenalty) + "<br/>";
-    }
-
-    if (loseTooFarPenalty != 0) {
-        pointBreakdownComment += "-Lose too far points " + Math.round(loseTooFarPenalty) + "<br/>";
-    }
-
-    if (nearlyWin != 0) {
-        pointBreakdownComment += "-Finished close, points " + Math.round(nearlyWin) + "<br/>";
-    }
-
-    if (bigPrizeBonus != 0) {
-        pointBreakdownComment += "-Race Prize Money, points " + Math.round(bigPrizeBonus) + "<br/>";
-    }
-
-    if (winBonus != 0) {
-        pointBreakdownComment += "-Finished in place, points " + Math.round(winBonus) + "<br/>";
-    }
-
-    if (bigWinBonus != 0) {
-        pointBreakdownComment += "-Last time won like a god, points " + Math.round(bigWinBonus) + "<br/>";
-    }
-
-    if (sameRacePrevious != 0) {
-        pointBreakdownComment += "-Won same race last start, points " + Math.round(sameRacePrevious) + "<br/>";
-    }
-
-    if (brokeMaiden != 0) {
-        pointBreakdownComment += "-Just broke maiden, points " + Math.round(brokeMaiden) + "<br/>";
-    }
-
-    if (lowOddCouldntWin != 0) {
-        pointBreakdownComment += "-Low odd but couldn't win, points " + Math.round(lowOddCouldntWin) + "<br/>";
-    }
-
-    if (outOfPlacing != 0) {
-        if(specialFinishPoints == 0){
-            pointBreakdownComment += "-Out of placings, points " + Math.round(outOfPlacing) + "<br/>";
+                // 2. just won the same race previously 
+                if (form.Finish == 1 && form.Track == race.Meeting.Track && form.Distance == race.Distance) {
+                    sameRacePrevious -= 25;
+                    pointPool += 10; // same race previous
+                    wonLastRace = true;
+                } else if (form.Finish == 1){ // just win last race
+                    sameRacePrevious -= 10;
+                    wonLastRace = true;
+                }
+    
+                // 4. Last start broke maiden
+                if (form.Finish == 1 && form.RaceClass.toLowerCase().includes("mdn")) {
+                    brokeMaiden -= 5;
+                    wonLastRace = true;
+                    pointPool += 10; // broke maiden previous
+                }
+            }
+            // 5. Low odd but couldn't win
+            if (form.Finish != 1 && (Math.abs(form.Distance - race.Distance) <= 150)) {
+                if (Number(form.StartingPrice) < 2 && form.Margin >= 0.3) {
+                    lowOddCouldntWin -= 15;
+                    pointPool -= lowOddCouldntWin;
+                } else if (Number(form.StartingPrice) < 2.5 && form.Margin >= 0.5 && form.Finish >= 3) {
+                    lowOddCouldntWin -= Math.ceil(10 + (form.Margin-0.5));
+                    pointPool -= lowOddCouldntWin;
+                } else if (Number(form.StartingPrice) < 3 && form.Margin >= 1 && form.Finish >= 3) {
+                    lowOddCouldntWin -= Math.ceil(8 + (form.Margin-1));
+                    pointPool -= lowOddCouldntWin;
+                } else if (Number(form.StartingPrice) < 3.5 && form.Margin >= 1.5 && form.Finish >= 3) {
+                    lowOddCouldntWin -= Math.ceil(6 + (form.Margin-1.5));
+                    pointPool -= lowOddCouldntWin;
+                } else if (Number(form.StartingPrice) <= 4 && form.Margin >= 2 && form.Finish >= 4) {
+                    lowOddCouldntWin -= Math.ceil(4 + (form.Margin-2));
+                    pointPool -= lowOddCouldntWin;
+                } else if (Number(form.StartingPrice) < 4.5 && form.Margin >= 3 && form.Finish >= 3) {
+                    lowOddCouldntWin -= Math.ceil(3 + (form.Margin-3));
+                    pointPool -= lowOddCouldntWin;
+                } else if (Number(form.StartingPrice) <= 5 && form.Margin >= 5 && form.Finish >= 5) {
+                    lowOddCouldntWin -= Math.ceil(2 + (form.Margin - 5));
+                    pointPool -= lowOddCouldntWin;
+                }
+            }
+    
+            if (form.Finish <= 3) {
+                var finish = form.Finish;
+                var margin = form.Margin;
+                var timeRan = 0;
+                var timeArray = [];
+                var expectedWinTime = "N/A";
+    
+                if (form.TimeRan != "N/A") {
+                    var minute = 0;
+                    var secondArray = [];
+                    timeRan = form.TimeRan;
+                    timeArray = timeRan.split(":");
+                    if (timeArray.length != 1) {
+                        minute = timeArray[0];
+                        secondArray = timeArray[1].split(".");
+                    } else {
+                        secondArray = timeArray[0].split(".");
+                    }
+    
+                    var second = secondArray[0];
+                    var mili = secondArray[1];
+    
+                    var miliToWin = Number(mili);
+                    // Margin Bonus to time, 0.1L = 3ms
+                    if (finish != 1) {
+                        miliToWin += Number(form.Margin) * 10 * 3;
+                    }
+    
+                    logger("000 miliToWin == " + miliToWin);
+                    //Barrier Bonus to time, 1 Barrier = 33ms
+                    var barrierDiffirence = Number(runner.Barrier) - Number(form.Barrier);
+                    miliToWin += Number(barrierDiffirence * 33);
+                    logger("1111 miliToWin == " + miliToWin);
+                    // Weight Bonus to time, 1kg = 50ms
+                    logger("2222 miliToWin == " + miliToWin);
+                    var weightDifference =
+                        Number(runner.Weight.Total) -
+                        (Number(form.BodyWeight) + Number(form.WeightCarried));
+                    logger(
+                        "form.BodyWeight = " +
+                        form.BodyWeight +
+                        "form.WeightCarried = " +
+                        form.WeightCarried +
+                        "| weight = " +
+                        runner.Weight.Total +
+                        " | weightDifference = " +
+                        weightDifference +
+                        " | ADDED = " +
+                        Number(weightDifference * 50)
+                    );
+    
+                    miliToWin += Number(weightDifference * 50);
+                    logger("3333 miliToWin == " + miliToWin);
+    
+                    // Track Condition
+                    if (race.Distance == 1400) {
+                        if (
+                            form.TrackCondition.toLowerCase() == "g" &&
+                            race.Meeting.TrackCondition.charAt(0).toLowerCase() == "h"
+                        ) {
+                            miliToWin += 400;
+                        } else if (
+                            form.TrackCondition.toLowerCase() == "h" &&
+                            race.Meeting.TrackCondition.charAt(0).toLowerCase() == "g"
+                        ) {
+                            miliToWin -= 400;
+                        }
+                    }
+    
+                    var secondToWin = Math.floor(miliToWin / 100);
+    
+                    if (miliToWin < 0) {
+                        miliToWin = 100 + (miliToWin % 100);
+                    }
+    
+                    var remainingMiliToWin = miliToWin % 100;
+                    second = Number(second) + Number(secondToWin);
+                    mili = Number(remainingMiliToWin);
+                    if (second > 60) {
+                        minute = Number(minute) + Math.floor(second / 60);
+                    }
+                    second = second % 60;
+    
+                    expectedWinTime = minute + ":" + second + "." + mili;
+                    logger(
+                        "minute = " +
+                        timeArray[0] +
+                        " second = " +
+                        second +
+                        " mili = " +
+                        remainingMiliToWin
+                    );
+                }
+                var formInfo = "";
+                formInfo += "-Days since: <b>" + daysToToday(form.Date) + "</b>";
+                if (form.Distance == race.Distance) {
+                    formInfo += "<br/>-<b>Distance: " + form.Distance + "</b>";
+                } else {
+                    formInfo += "<br/>-Distance: " + form.Distance;
+                }
+    
+                if (form.TrackCondition == race.Meeting.TrackCondition.charAt(0)) {
+                    formInfo += "<br/>-<b>Condition: " + form.TrackCondition + "</b>";
+                } else {
+                    formInfo += "<br/>-Condition: " + form.TrackCondition;
+                }
+                
+                if (form.Barrier == runner.Barrier) {
+                    formInfo += "<br/>-<b>Barrier: " + form.Barrier + "</b>";
+                } else {
+                    formInfo += "<br/>-Barrier: " + form.Barrier;
+                }
+                formInfo +=
+                    "</br>-In run: " +
+                    form.InRun +
+                    "<br/>-Finish: " +
+                    finish +
+                    "/" +
+                    form.NumberOfRunners +
+                    "<br/>-Time: " +
+                    timeRan +
+                    
+                    "</br>-Expected Time: " +
+                    expectedWinTime +
+                    "<br/>-Margin: " +
+                    margin +
+                    "<br/>----------------<br/>";
+                formCell.innerHTML += formInfo;
+            }
+    
+            // }
+            // pointPool += 10; // last start
+            // pointPool += 5; // same jock
+            // pointPool += 20; // same barrier
+            // pointPool += 5; // same distance
+            // pointPool += 5; // nearly win
+            // pointPool += 10; // nearly win
+            // pointPool += 15; // big prize
+            // pointPool += 10; // win bonus
+            // pointPool += 0; // big win bonus
+            // pointPool += 0; // big too close
+        });
+    
+        if(badFormSince100dSpellCount >= 3){
+            badFormSince100dSpellPoints -= 20;
+            pointPool += 20;
         }
+    
+        if (shouldCountSpecial) {
+            if (specialFinish >= 4) {
+                specialFinishPoints += 20;
+                pointPool += 20;
+            } else if (specialFinish >= 3) {
+                specialFinishPoints += 10;
+                pointPool += 10;
+            }
+            // if in special streak, ignore out of placing, ignore bad form
+            if(outOfPlacing !=  0){
+                pointPool += outOfPlacing; // return point pool
+                outOfPlacing = 0;
+            }
+    
+            if(badFormSince100dSpellPoints !=  0){
+                pointPool += badFormSince100dSpellPoints; // return point pool
+                badFormSince100dSpellPoints = 0;
+            }
+        }
+    
+        // reset low odd couldn't win if won last start
+        if(wonLastRace){ 
+            lowOddCouldntWin = 0;
+        }
+    
+        totalPoints = lastStartBonus +
+            familiarJockeyBonus +
+            familiarBarrierBonus +
+            familiarDistanceBonus +
+            nearlyWinBonus +
+            winTooClosePenalty +
+            loseTooFarPenalty +
+            bigPrizeBonus +
+            nearlyWin +
+            winBonus +
+            bigWinBonus +
+            sameRacePrevious +
+            brokeMaiden +
+            lowOddCouldntWin +
+            outOfPlacing +
+            specialFinishPoints +
+            badFormSince100dSpellPoints;
+        // console.log("RUNNER: " + runner.Name +" || TOTAL: lastStartBonus = "+ lastStartBonus + 
+        // " || familiarJockeyBonus = " +familiarJockeyBonus+ 
+        // " || familiarBarrierBonus = " +familiarBarrierBonus+
+        // " || familiarDistanceBonus = " +familiarDistanceBonus+
+        // " || nearlyWinBonus = " +nearlyWinBonus+
+        // " || winTooClosePenalty = " +winTooClosePenalty+
+        // " || loseTooFarPenalty = " +loseTooFarPenalty+
+        // " || bigPrizeBonus = " +bigPrizeBonus+
+        // " || nearlyWin = " +nearlyWin+
+        // " || winBonus = " +winBonus+
+        // " || bigWinBonus = " +bigWinBonus+
+        // " || sameRacePrevious = " +sameRacePrevious+
+        // " || brokeMaiden = " +brokeMaiden+
+        // " || lowOddCouldntWin = " +lowOddCouldntWin+
+        // " || outOfPlacing = " +outOfPlacing+
+        // " || specialFinishPoints = " +specialFinishPoints+
+        // " || badFormSince100dSpellPoints = " +badFormSince100dSpellPoints+
+        // " || Total Points = " +totalPoints);
+        // pointBreakdownComment += "-- SPECIAL POINTS --<br/>";
+        if (lastStartBonus != 0) {
+            // pointBreakdownComment += "-Last start is too far, " + Math.round(lastStartBonus / pointPool * 200) + "<br/>";
+            pointBreakdownComment += "-Last start is too far, " + Math.round(lastStartBonus) + "<br/>";
+        }
+    
+        if (familiarJockeyBonus != 0) {
+            pointBreakdownComment += "-Same jockey points " + Math.round(familiarJockeyBonus) + "<br/>";
+        }
+    
+        if (familiarBarrierBonus != 0) {
+            pointBreakdownComment += "-Same barrier points " + Math.round(familiarBarrierBonus) + "<br/>";
+        }
+    
+        if (familiarDistanceBonus != 0) {
+            pointBreakdownComment += "-Same distance points " + Math.round(familiarDistanceBonus) + "<br/>";
+        }
+    
+        if (nearlyWinBonus != 0) {
+            pointBreakdownComment += "-Nearly Win with big odd points " + Math.round(nearlyWinBonus) + "<br/>";
+        }
+    
+        if (winTooClosePenalty != 0) {
+            pointBreakdownComment += "-Won too close, points " + Math.round(winTooClosePenalty) + "<br/>";
+        }
+    
+        if (loseTooFarPenalty != 0) {
+            pointBreakdownComment += "-Lose too far points " + Math.round(loseTooFarPenalty) + "<br/>";
+        }
+    
+        if (nearlyWin != 0) {
+            pointBreakdownComment += "-Finished close, points " + Math.round(nearlyWin) + "<br/>";
+        }
+    
+        if (bigPrizeBonus != 0) {
+            pointBreakdownComment += "-Race Prize Money, points " + Math.round(bigPrizeBonus) + "<br/>";
+        }
+    
+        if (winBonus != 0) {
+            pointBreakdownComment += "-Finished in place, points " + Math.round(winBonus) + "<br/>";
+        }
+    
+        if (bigWinBonus != 0) {
+            pointBreakdownComment += "-Last time won like a god, points " + Math.round(bigWinBonus) + "<br/>";
+        }
+    
+        if (sameRacePrevious != 0) {
+            pointBreakdownComment += "-Won same race last start, points " + Math.round(sameRacePrevious) + "<br/>";
+        }
+    
+        if (brokeMaiden != 0) {
+            pointBreakdownComment += "-Just broke maiden, points " + Math.round(brokeMaiden) + "<br/>";
+        }
+    
+        if (lowOddCouldntWin != 0) {
+            pointBreakdownComment += "-Low odd but couldn't win, points " + Math.round(lowOddCouldntWin) + "<br/>";
+        }
+    
+        if (outOfPlacing != 0) {
+            if(specialFinishPoints == 0){
+                pointBreakdownComment += "-Out of placings, points " + Math.round(outOfPlacing) + "<br/>";
+            }
+        }
+    
+        if (specialFinishPoints != 0) {
+            pointBreakdownComment += "-Special finish streak, points " + Math.round(specialFinishPoints) + "<br/>";
+        }
+    
+        if (badFormSince100dSpellPoints != 0) {
+            pointBreakdownComment += "-Since 100 days spell, forms are bad " + Math.round(badFormSince100dSpellPoints) + "<br/>";
+        }
+        // pointBreakdownComment += "------- END SPECIAL POINTS -------<br/>";
+        // prize pool = 100 points
+        // console.log("RUNNER = "+ runner.Name + " || totalPoints = " + totalPoints + " || pointPool = " + pointPool);
+    
+        // if (pointPool != 0) {
+        //     // formBonus = Math.round(totalPoints / pointPool * 100);
+        //     formBonus = Math.round(totalPoints);
+        // }
+        // if (Number(runner.stats.winPercent) != 0) {
+        //     formBonus = Math.round(formBonus * (runner.stats.winPercent) / 10);
+        // } else if(Number(runner.stats.placePercent) != 0){
+        //     formBonus = Math.round(formBonus * (runner.stats.placePercent) / 20);
+        // }
+    
+        formBonus = Math.round(totalPoints);
+    
+        // if (numberOfHorseBonus != 0) {
+        //     formBonus += Number(numberOfHorseBonus);
+        // }
+    
+        // if(formBonus > 0){
+        //     formBonus *= 1.5
+        // }
+    
+        
+        formCell.innerHTML += "<br/><b>POINTS: " + formBonus + "</b>";
     }
-
-    if (specialFinishPoints != 0) {
-        pointBreakdownComment += "-Special finish streak, points " + Math.round(specialFinishPoints) + "<br/>";
-    }
-
-    if (badFormSince100dSpellPoints != 0) {
-        pointBreakdownComment += "-Since 100 days spell, forms are bad " + Math.round(badFormSince100dSpellPoints) + "<br/>";
-    }
-    // pointBreakdownComment += "------- END SPECIAL POINTS -------<br/>";
-    // prize pool = 100 points
-    // console.log("RUNNER = "+ runner.Name + " || totalPoints = " + totalPoints + " || pointPool = " + pointPool);
-
-    // if (pointPool != 0) {
-    //     // formBonus = Math.round(totalPoints / pointPool * 100);
-    //     formBonus = Math.round(totalPoints);
-    // }
-    // if (Number(runner.stats.winPercent) != 0) {
-    //     formBonus = Math.round(formBonus * (runner.stats.winPercent) / 10);
-    // } else if(Number(runner.stats.placePercent) != 0){
-    //     formBonus = Math.round(formBonus * (runner.stats.placePercent) / 20);
-    // }
-
-    formBonus = Math.round(totalPoints);
-
-    // if (numberOfHorseBonus != 0) {
-    //     formBonus += Number(numberOfHorseBonus);
-    // }
-
-    formCell.innerHTML += "<br/><b>POINTS: " + formBonus + "</b>";
-    // if(formBonus > 0){
-    //     formBonus *= 2
-    // }
+    
     pointBreakdownComment += "-Form bonus points " + formBonus + "<br/>";
     returnObject = {
         formBonus: formBonus,
