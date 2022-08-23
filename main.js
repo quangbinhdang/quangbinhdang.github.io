@@ -115,6 +115,7 @@ async function process_horse(table, race, condition) {
     var highestWeight = allRunners[allRunners.length - 1].Weight.Total;
     var lowestWeight = allRunners[0].Weight.Total;
     race.Runners.forEach((runner) => {
+        console.log("Runner: " + runner.Name)
         var status = runner.Status;
         if (status != "Scratched") {
             availableRunners.push(runner);
@@ -604,7 +605,8 @@ function getTrackConditionBonus(race, runner, pointBreakdownComment, condition) 
                     trackConditionBonus += Math.round(winPercentage * 50 ); // 50 points for 100% win
                 } else {
                     if(numberOfStarts >= 3){
-                        trackConditionBonus -= (15 + Math.round((100 - trackConditionBonus) * 15 ) );
+                        console.log("placePercentage = " + placePercentage)
+                        trackConditionBonus -= (15 + Math.round((1 - placePercentage) * 15 ) );
                     }
                 }
             } 
